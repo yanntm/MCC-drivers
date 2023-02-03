@@ -50,9 +50,10 @@ with open('iscolored', 'r') as is_colored_file:
 # Some common paths and names
 model_name = os.environ['BK_INPUT']
 model_file = os.path.join(os.path.abspath(os.getcwd()), 'model.pnml')
-orders_dir = '/home/mcc/BenchKit/bin/orders'
-pnmc = '/home/mcc/BenchKit/bin/pnmc'
-caesar = '/home/mcc/BenchKit/bin/caesar.sdd'
+binpath = os.environ['BK_BIN_PATH']
+orders_dir = binpath + '/orders'
+pnmc = binpath + '/pnmc'
+caesar = binpath + '/caesar.sdd'
 results_file = 'results.json'
 model_bpn_file = os.path.join(os.path.abspath(os.getcwd()), 'model.bpn')
 
