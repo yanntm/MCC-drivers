@@ -59,7 +59,7 @@ with open('iscolored', 'r') as is_colored_file:
   if is_colored_file.read().rstrip() == "TRUE":
     cli = [ binpath+ '/../itstools/its-tools'
         , '-pnfolder' , '.'
-        , '-examination StateSpace'
+        , '-examination', 'StateSpace'
         , '--reduce', 'STATESPACE'
         ]  
     # Launch itstools to unfold
