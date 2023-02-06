@@ -3,7 +3,7 @@
 # install as root
 su
 apt-get update
-apt-get install git libboost-dev g++ ca-certificates
+apt-get install git libboost-dev g++ ca-certificates python
 
 exit
 
