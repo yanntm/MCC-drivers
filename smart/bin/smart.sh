@@ -32,8 +32,15 @@ IS_COLORED=iscolored
 
 if [[ `grep TRUE $IS_COLORED` ]]
 then
-  echo "DO_NOT_COMPETE"
-else
+	$BIN_DIR/itstools/its-tools -pnfolder . -examination $BK_EXAMINATION --reduce-single STATESPACE
+    mv model.pnml model.COL.pnml
+    mv model.STATESPACE.pnml model.pnml
+    if [ -f $BK_EXAMINATION.STATESPACE.xml ] ; then
+    	mv  $BK_EXAMINATION.xml $BK_EXAMINATION.COL.xml
+    	mv $BK_EXAMINATION.STATESPACE.xml $BK_EXAMINATION.xml
+    fi
+fi
+	
   MODEL_NAME=$(echo "$BK_INPUT" | cut -d '-' -f 1)
   MODEL_TYPE=$(echo "$BK_INPUT "| cut -d '-' -f 2)
   MODEL_INST=$(echo "$BK_INPUT" | cut -d '-' -f 3)
@@ -114,4 +121,4 @@ else
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SMART/ ; ${SMART}/smart ${INPUT_SM}
   #rm ${INPUT_SM}
   ##rm ${SETTINGS_FILE}
-fi
+
