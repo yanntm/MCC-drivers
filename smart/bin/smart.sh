@@ -1,11 +1,11 @@
 #!/bin/bash
 
-BIN_DIR=$HOME/BenchKit/bin
+BIN_DIR=$BK_BIN_PATH
 PARSER=
 
 #SMART_SS=${BIN_DIR}/main/smart
 #SMART=${BIN_DIR}/smart
-SMART=${BIN_DIR}/rem_exec/smart
+SMART=${BIN_DIR}/rem_exec/
 
 INPUT_PNML=model.pnml
 
@@ -41,12 +41,12 @@ else
   # Choose the parser and the extra argument
   case "$1" in
     StateSpace)
-      SMART=${BIN_DIR}/main/smart 
+      SMART=${BIN_DIR}/main/
       PARSER=${BIN_DIR}/parser/StateSpaceParse.jar
       INPUT_EXTRA=
       ;;
     UpperBounds)
-      SMART=${BIN_DIR}/upper_bound/smart
+      SMART=${BIN_DIR}/upper_bound/
       PARSER=${BIN_DIR}/parser/UpperBoundParse.jar
       INPUT_EXTRA=${INPUT_UPPERBOUNDS}
       ;;
@@ -97,7 +97,7 @@ else
   echo "Running $MODEL_NAME ($MODEL_TYPE), instance $MODEL_INST"
   echo "Examination $1"
   echo "Parser $PARSER"
-  echo "Model checker $SMART"
+  echo "Model checker $SMART/smart"
   echo
   
 ##
@@ -111,7 +111,7 @@ else
 ##
   
   java -jar ${PARSER} ${INPUT_PNML} ${INPUT_EXTRA}
-  ${SMART} ${INPUT_SM}
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SMART/ ; ${SMART}/smart ${INPUT_SM}
   #rm ${INPUT_SM}
   ##rm ${SETTINGS_FILE}
 fi
