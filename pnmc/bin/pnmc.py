@@ -47,7 +47,7 @@ binpath = os.environ['BK_BIN_PATH']
 orders_dir = binpath + '/orders'
 pnmc = binpath + '/pnmc'
 caesar = binpath + '/caesar.sdd'
-results_file = 'results.json'
+results_file = os.path.join(os.path.abspath(os.getcwd()), 'stats.json')
 model_bpn_file = os.path.join(os.path.abspath(os.getcwd()), 'model.bpn')
 
 ##################################################################################
