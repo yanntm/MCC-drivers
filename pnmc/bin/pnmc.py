@@ -72,8 +72,11 @@ with open('iscolored', 'r') as is_colored_file:
 
 
 # Is it a known model?
-known = not os.path.isfile(os.path.join(os.path.abspath(os.getcwd()), 'NewModel'))
-printerr('Known', known)
+# known = not os.path.isfile(os.path.join(os.path.abspath(os.getcwd()), 'NewModel'))
+# printerr('Known', known)
+
+known = false
+
 
 ##################################################################################
 
