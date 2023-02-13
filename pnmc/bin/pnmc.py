@@ -83,6 +83,7 @@ known = False
 # First check if we have a model with a NUPN tool specific section
 try:
 
+  printerr('Running NUPN extraction with model='+model_file+' and bpn='+model_bpn_file)
   nupn.parse(model_file, model_bpn_file)
 
   # Common command line arguments for both known and unknown models.
@@ -107,7 +108,7 @@ except Exception as e:
         , '--cache-size=hom:16000000,sum:16000000,inter:8000000,diff:8000000'
         # , '--json=stats'
         # , '--time-limit=1'
-        , '--input=pnml'
+        , '--format=pnml'
         , '--count-tokens'
         , model_file
         ]  
