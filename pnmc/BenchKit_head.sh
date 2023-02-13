@@ -11,4 +11,4 @@
 # BK_EXAMINATION: it is a string that identifies your "examination"
 
 export PATH="$PATH:$BK_BIN_PATH"
-$HOME/BenchKit/bin/pnmc.py
+$BK_BIN_PATH/pnmc.py
