@@ -106,7 +106,7 @@ except Exception as e:
   # Common command line arguments for both known and unknown models.
   cli = [ pnmc
         , '--cache-size=hom:16000000,sum:16000000,inter:8000000,diff:8000000'
-        # , '--json=stats'
+        , '--json=stats'
         # , '--time-limit=1'
         , '--format=pnml'
         , '--count-tokens'
