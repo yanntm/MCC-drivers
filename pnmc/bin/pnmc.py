@@ -13,10 +13,13 @@ import nupn
 
 def print_result(nb_states, marking, place):
   tech = 'TECHNIQUES DECISION_DIAGRAMS SEQUENTIAL_PROCESSING'
-  print('STATE_SPACE STATES', nb_states, tech)
-  print('STATE_SPACE TRANSITIONS', -1, tech)
-  print('STATE_SPACE MAX_TOKEN_PER_MARKING', marking, tech)
-  print('STATE_SPACE MAX_TOKEN_IN_PLACE', place, tech)
+  if (nb_states != -1) : 
+    print('STATE_SPACE STATES', nb_states, tech)
+#    print('STATE_SPACE TRANSITIONS', -1, tech)
+  if (marking != -1) : 
+      print('STATE_SPACE MAX_TOKEN_PER_MARKING', marking, tech)
+  if (place != -1) :
+      print('STATE_SPACE MAX_TOKEN_IN_PLACE', place, tech)
 
 ##################################################################################
 
