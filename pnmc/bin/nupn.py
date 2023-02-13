@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 import collections
 import sys
 try:
@@ -175,3 +177,4 @@ if __name__ == "__main__":
   pnml_input = sys.argv[1]
   nupn_output = sys.argv[2]
   parse(pnml_input, nupn_output)
+
