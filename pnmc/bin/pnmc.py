@@ -132,7 +132,7 @@ except Exception as e:
 
     # Launch pnmc
     printerr(cli)
-    ret = subprocess.call(cli, stdout=sys.stderr)
+    ret = subprocess.call(cli)
 
     # Check if pnmc correctly finished.
     if ret != 0:
