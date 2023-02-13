@@ -75,7 +75,7 @@ with open('iscolored', 'r') as is_colored_file:
 # known = not os.path.isfile(os.path.join(os.path.abspath(os.getcwd()), 'NewModel'))
 # printerr('Known', known)
 
-known = false
+known = False
 
 
 ##################################################################################
