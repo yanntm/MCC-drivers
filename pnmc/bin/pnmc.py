@@ -140,7 +140,7 @@ except Exception as e:
 
     # Check if pnmc correctly finished.
     if ret != 0:
-      printerr('pnmc failed with return code ' + ret)
+      printerr('pnmc failed with return code ' + str(ret))
       print('CANNOT COMPUTE')
       sys.exit(0)
     
