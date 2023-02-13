@@ -94,10 +94,10 @@ try:
         , '--show-nb-states'
         , model_bpn_file]
   printerr(cli)
-  output = subprocess.check_output(cli)
-  print(output)
+  output = subprocess.run(cli)
+  output.check_returncode()
   # Export results to BenchKit
-  nb_states = output.decode('ascii').split()[0]
+  # nb_states = output.decode('ascii').split()[0]
   # Output was already produced by caesar.sdd
   # print_result(nb_states, -1, -1)
   sys.exit(0)
