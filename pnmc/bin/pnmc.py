@@ -143,16 +143,17 @@ except Exception as e:
     while not os.path.exists(results_file):
       time.sleep(1/10) # 1/10 second
 
+# current pnmc already prints MCC compliant outputs to stdout.
   # Export results to BenchKit
-  try:
-    with open(results_file, 'r') as f:
-      results = json.load(f)
-      nb_states = results['pnmc']['states']
-      marking = results['pnmc']['max number of tokens per marking']
-      place  = results['pnmc']['max number of tokens in a place']
-      print_result(nb_states, marking, place)
-  except FileNotFoundError:
-      print('CANNOT COMPUTE')
-      sys.exit(0)
+#  try:
+#    with open(results_file, 'r') as f:
+#      results = json.load(f)
+#      nb_states = results['pnmc']['states']
+#      marking = results['pnmc']['max number of tokens per marking']
+#      place  = results['pnmc']['max number of tokens in a place']
+#      print_result(nb_states, marking, place)
+#  except FileNotFoundError:
+#      print('CANNOT COMPUTE')
+#      sys.exit(0)
 
   sys.exit(0)
