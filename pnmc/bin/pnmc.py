@@ -95,10 +95,11 @@ try:
         , model_bpn_file]
   printerr(cli)
   output = subprocess.check_output(cli)
-
+  print(output)
   # Export results to BenchKit
   nb_states = output.decode('ascii').split()[0]
-  print_result(nb_states, -1, -1)
+  # Output was already produced by caesar.sdd
+  # print_result(nb_states, -1, -1)
   sys.exit(0)
 
 # Not a NUPN model or caesar.sdd failed.
