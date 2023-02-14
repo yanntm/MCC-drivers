@@ -60,7 +60,7 @@ model_bpn_file = os.path.join(os.path.abspath(os.getcwd()), 'model.bpn')
 # We don't handle colored models.
 with open('iscolored', 'r') as is_colored_file:
   if is_colored_file.read().rstrip() == "TRUE":
-    cli = [ binpath+ '/../itstools/its-tools'
+    cli = [ binpath+ '/itstools/its-tools'
         , '-pnfolder' , '.'
         , '-examination', 'StateSpace'
         , '--reduce', 'STATESPACE'
