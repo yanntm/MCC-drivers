@@ -14,16 +14,18 @@ export PATH="$PATH:$BK_BIN_PATH"
 
 case "$BK_EXAMINATION" in
 
-	ReachabilityCardinality|ReachabilityFireability|CTLCardinality|CTLFireability|StateSpace|UpperBounds|OneSafe|Liveness|StableMarking|QuasiLiveness|ReachabilityDeadlock)
+# these are currently disabled (less than 100% accurate)
+# CTLCardinality|CTLFireability|
+	ReachabilityCardinality|ReachabilityFireability|StateSpace|UpperBounds|OneSafe|Liveness|StableMarking|QuasiLiveness|ReachabilityDeadlock)
 		$BK_BIN_PATH/smart.sh $BK_EXAMINATION | tee $BK_BIN_PATH/../log
 		;;
 #	Reachability*)
 #                echo "DO_NOT_COMPETE"
 #                ;;	
 
-#	CTL*)
-#		echo "DO_NOT_COMPETE"
-#		;;
+	CTL*)
+		echo "DO_NOT_COMPETE"
+		;;
 	
 	LTL*)
 		echo "DO_NOT_COMPETE"
