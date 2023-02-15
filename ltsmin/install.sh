@@ -8,6 +8,7 @@ tar xvzf ltsmin_linux_64.tar.gz
 mv lts_install_dir/bin/pnml* ..
 cd ..
 rm -rf dl/
+cd ..
 
 # for unfolding
 ./install_itstools.sh
