@@ -47,5 +47,5 @@ The first commit in this folder is a direct extraction from the VM submitted in 
  
  * a script that automates the deployment on a naked VM is provided. 
  
-
+ * a "license" file was added, with the text from the home page.
  
