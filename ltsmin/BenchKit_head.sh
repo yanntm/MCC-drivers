@@ -10,6 +10,8 @@
 
 # BK_EXAMINATION: it is a string that identifies your "examination"
 
+export PATH=$BK_BIN_PATH:$PATH
+
 TIME_CONFINEMENT=$((${BK_TIME_CONFINEMENT-3600}-30))
 
 F_PREFIX=${F_PREFIX-"/tmp"}
@@ -22,8 +24,14 @@ hostname 1>&2
 
 grep "TRUE" iscolored > /dev/null
 if [ $? == 0 ]; then
-    echo "DO_NOT_COMPETE"
-    exit 1
+    $BK_BIN_PATH'/itstools/its-tools' '-pnfolder' '.' '-examination' $BK_EXAMINATION '--reduce' 'STATESPACE'   
+    # patch resulting file name
+    mv model.pnml model.COL.pnml
+    mv model.STATESPACE.pnml model.pnml
+	if [ -f $BK_EXAMINATION.xml ] ; then 
+		mv $BK_EXAMINATION.xml $BK_EXAMINATION.COL.xml
+		mv $BK_EXAMINATION.STATESPACE.xml $BK_EXAMINATION.xml 
+	fi
 fi
 
 case "$BK_EXAMINATION" in
