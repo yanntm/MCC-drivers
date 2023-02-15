@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<property-set xmlns="http://mcc.lip6.fr/">
+  <property>
+    <id>ReachabilityDeadlock</id>
+    <description>Compatibility file since formats have changed.</description>
+    <formula>
+      <exists-path>
+        <finally>
+          <deadlock/>
+        </finally>
+      </exists-path>
+    </formula>
+  </property>
+</property-set>
