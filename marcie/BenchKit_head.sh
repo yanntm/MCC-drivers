@@ -6,11 +6,12 @@
 
 # BK_EXAMINATION: it is a string that identifies your "examination"
 
-export PATH="$PATH:/home/mcc/BenchKit/bin/"
+export PATH="$PATH:$BK_BIN_PATH"
 
-MARCIE_CONFIG="--memory=6"
+MARCIE_CONFIG="--memory=6 --mcc-mode"
 TIMEOUT="timeout --kill-after=10s --signal=SIGINT 1m"
-MARCIE="marcie"
+MARCIE="${BK_BIN_PATH}marcie"
+
 
 case "$BK_EXAMINATION" in
 
@@ -23,6 +24,13 @@ case "$BK_EXAMINATION" in
     echo "${TIMEOUT} for testing only"
     ${MARCIE} --net-file=model.pnml --mcc-file=${BK_EXAMINATION}.xml ${MARCIE_CONFIG}
   ;;
+
+  ReachabilityDeadlock)
+  	# special case for deadlocks, MCC used to provide a file but does not any more.
+    echo "${TIMEOUT} for testing only"    
+    ${MARCIE} --net-file=model.pnml --mcc-file=${BK_BIN_PATH}/ReachabilityDeadlock.xml ${MARCIE_CONFIG}
+  ;;
+
 
   Reachability*)
     echo "${TIMEOUT} for testing only"
