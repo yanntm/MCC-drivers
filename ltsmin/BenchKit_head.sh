@@ -29,14 +29,14 @@ fi
 case "$BK_EXAMINATION" in
 
 	StateSpace)
-		{ stderr=$(pnml2lts-sym model.pnml --lace-workers=4 --vset=lddmc --next-union --order=chain-prev --sat-granularity=5 --saturation=sat-like -rw2W,ru,bs,hf \
-		 --sylvan-sizes=28,28,28,28 --maxsum 2>&1 1>&3-) ;} 3>&1
+		{ stderr=$(pnml2lts-sym model.pnml --lace-workers=4 --vset=lddmc --saturation=sat -rw2W,ru,bs,hf \
+		 --sylvan-sizes=20,28,20,28 --maxsum 2>&1 1>&3-) ;} 3>&1
 		echo "$stderr" 1>&2
 		
 		echo "$stderr" | grep "Got invalid permutation from boost" > /dev/null
 		if [ $? -eq 0 ]; then
-		    { stderr=$(pnml2lts-sym model.pnml --lace-workers=4 --vset=lddmc --next-union --order=chain-prev --sat-granularity=5 --saturation=sat-like -rw2W,ru,f,rs,hf \
-		    --sylvan-sizes=28,28,28,28 --maxsum 2>&1 1>&3-) ;} 3>&1
+		    { stderr=$(pnml2lts-sym model.pnml --lace-workers=4 --vset=lddmc --saturation=sat -rw2W,ru,f,rs,hf \
+		    --sylvan-sizes=20,28,20,28 --maxsum 2>&1 1>&3-) ;} 3>&1
 		    echo "$stderr" 1>&2
 		fi
 		
