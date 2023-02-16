@@ -185,15 +185,10 @@ case "$BK_EXAMINATION" in
                 all_violated=$?                
                 
                 while read -r line; do
-                	echo "line=$$line"
                     name=$(echo "$line" | cut -d' ' -f4-)
-                    echo "name=$name"
                     other=$(echo "$stderr" | grep -A2 "rfs formula name $name$")
-                    echo "other=$other"
                     type=$(echo "$other" | grep "rfs formula type" | cut -d' ' -f4-)
-                    echo "type=$other"
                     formula=$(echo "$other" | grep -m1 "rfs formula formula --invariant=" | cut -d'=' -f2)
-                    echo "formula=$formula"                    
                     echo "$stderr" | grep "Invariant violation ($formula)" > /dev/null
                     result=$?
                     if [[ $result == 0 ]]; then
