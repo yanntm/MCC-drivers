@@ -165,7 +165,7 @@ def main():
         elif args.backend == 'mc':
             for invariant in invariants:
                 # we add multiple programs with &&, so if one timeouts then the others do not get executed.
-                print(" && timeout %d %s %s" % (args.timetout, command_mc, invariant))                
+                print(" && timeout %d %s %s" % (args.timeout, command_mc, invariant))                
     elif (args.category == "ltl"):
         if (args.backend != 'mc'):
             print("invalid backend", file=sys.stderr)
