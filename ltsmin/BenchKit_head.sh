@@ -10,6 +10,7 @@
 
 # BK_EXAMINATION: it is a string that identifies your "examination"
 
+
 export PATH=$BK_BIN_PATH:$PATH
 
 TIME_CONFINEMENT=$((${BK_TIME_CONFINEMENT-3600}-30))
@@ -33,6 +34,11 @@ if [ $? == 0 ]; then
 		mv $BK_EXAMINATION.STATESPACE.xml unf$BK_EXAMINATION/$BK_EXAMINATION.xml 
 	fi
 	cd unf$BK_EXAMINATION
+	if [[ $BK_EXAMINATION == *"Fireability" ]] ; then
+			NEWEXAM=$(echo $BK_EXAMINATION | sed s/Fireability/Cardinality/g)
+			mv $BK_EXAMINATION.xml $NEWEXAM.xml
+			export BK_EXAMINATION=$NEWEXAM
+	fi		
 fi
 
 
@@ -179,10 +185,15 @@ case "$BK_EXAMINATION" in
                 all_violated=$?                
                 
                 while read -r line; do
+                	echo "line=$$line"
                     name=$(echo "$line" | cut -d' ' -f4-)
+                    echo "name=$name"
                     other=$(echo "$stderr" | grep -A2 "rfs formula name $name$")
+                    echo "other=$other"
                     type=$(echo "$other" | grep "rfs formula type" | cut -d' ' -f4-)
+                    echo "type=$other"
                     formula=$(echo "$other" | grep -m1 "rfs formula formula --invariant=" | cut -d'=' -f2)
+                    echo "formula=$formula"                    
                     echo "$stderr" | grep "Invariant violation ($formula)" > /dev/null
                     result=$?
                     if [[ $result == 0 ]]; then
