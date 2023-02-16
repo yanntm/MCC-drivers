@@ -97,7 +97,7 @@ case "$BK_EXAMINATION" in
 	Reachability*)
 	    case "$BK_EXAMINATION" in	    
 	        ReachabilityDeadlock)
-	            line=$(python3 $BK_BIN_PATH/formulizer.py deadlock ReachabilityDeadlock.xml --timeout=$TIME_CONFINEMENT --backend=sym "$F_PREFIX")
+	            line=$(python3 $BK_BIN_PATH/formulizer.py deadlock $BK_BIN_PATH/ReachabilityDeadlock.xml --timeout=$TIME_CONFINEMENT --backend=sym "$F_PREFIX")
         
                 if [ $? -ne 0 ]; then
                     echo "could not parse formula" 1>&2
