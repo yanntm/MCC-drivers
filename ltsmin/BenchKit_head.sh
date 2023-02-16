@@ -22,17 +22,19 @@ EXTRA_TECHNIQUES=""
 
 hostname 1>&2
 
+# unfold step
 grep "TRUE" iscolored > /dev/null
 if [ $? == 0 ]; then
     $BK_BIN_PATH'/itstools/its-tools' '-pnfolder' '.' '-examination' $BK_EXAMINATION '--reduce-single' 'STATESPACE'   
     # patch resulting file name
-    mkdir unf
-    mv model.STATESPACE.pnml unf/model.pnml
+    mkdir -p unf$BK_EXAMINATION
+    mv model.STATESPACE.pnml unf$BK_EXAMINATION/model.pnml
 	if [ -f $BK_EXAMINATION.xml ] ; then 
-		mv $BK_EXAMINATION.STATESPACE.xml unf/$BK_EXAMINATION.xml 
+		mv $BK_EXAMINATION.STATESPACE.xml unf$BK_EXAMINATION/$BK_EXAMINATION.xml 
 	fi
-	cd unf
+	cd unf$BK_EXAMINATION
 fi
+
 
 case "$BK_EXAMINATION" in
 
