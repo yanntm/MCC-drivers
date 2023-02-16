@@ -67,7 +67,7 @@ case "$BK_EXAMINATION" in
 		;;
     
     UpperBounds)
-        line=$(python3 $HOME/BenchKit/formulizer.py upper-bounds "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym "$F_PREFIX")
+        line=$(python3 $BK_BIN_PATH/formulizer.py upper-bounds "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym "$F_PREFIX")
 
         if [ $? -ne 0 ]; then
             echo "could not parse formula" 1>&2
@@ -97,7 +97,7 @@ case "$BK_EXAMINATION" in
 	Reachability*)
 	    case "$BK_EXAMINATION" in	    
 	        ReachabilityDeadlock)
-	            line=$(python3 $HOME/BenchKit/formulizer.py deadlock ReachabilityDeadlock.xml --timeout=$TIME_CONFINEMENT --backend=sym "$F_PREFIX")
+	            line=$(python3 $BK_BIN_PATH/formulizer.py deadlock ReachabilityDeadlock.xml --timeout=$TIME_CONFINEMENT --backend=sym "$F_PREFIX")
         
                 if [ $? -ne 0 ]; then
                     echo "could not parse formula" 1>&2
@@ -110,7 +110,7 @@ case "$BK_EXAMINATION" in
                 
                 echo "$stderr" | grep "Got invalid permutation from boost" > /dev/null
 	            if [ $? -eq 0 ]; then
-	                line=$(python3 $HOME/BenchKit/formulizer.py deadlock ReachabilityDeadlock.xml --timeout=$TIME_CONFINEMENT --backend=sym --reorder="w2W,ru,f,rs,hf")
+	                line=$(python3 $BK_BIN_PATH/formulizer.py deadlock ReachabilityDeadlock.xml --timeout=$TIME_CONFINEMENT --backend=sym --reorder="w2W,ru,f,rs,hf")
             
                     if [ $? -ne 0 ]; then
                         echo "could not parse formula" 1>&2
@@ -146,7 +146,7 @@ case "$BK_EXAMINATION" in
                     extraopts="--extraopts=--inv-bin-par"
                 fi
                 
-                line=$(python3 $HOME/BenchKit/formulizer.py reachability "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym $extraopts "$F_PREFIX")
+                line=$(python3 $BK_BIN_PATH/formulizer.py reachability "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym $extraopts "$F_PREFIX")
                 
                 if [ $? -ne 0 ]; then
                     echo "could not parse formula" 1>&2
@@ -159,7 +159,7 @@ case "$BK_EXAMINATION" in
                 
                 echo "$stderr" | grep "Got invalid permutation from boost" > /dev/null
 	            if [ $? -eq 0 ]; then
-	                line=$(python3 $HOME/BenchKit/formulizer.py reachability "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym $extraopts --reorder="w2W,ru,f,rs,hf" "$F_PREFIX")
+	                line=$(python3 $BK_BIN_PATH/formulizer.py reachability "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym $extraopts --reorder="w2W,ru,f,rs,hf" "$F_PREFIX")
             
                     if [ $? -ne 0 ]; then
                         echo "could not parse formula" 1>&2
@@ -206,7 +206,7 @@ case "$BK_EXAMINATION" in
 	    esac
 		;;
 	CTL*)
-	    line=$(python3 $HOME/BenchKit/formulizer.py ctl "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym "$F_PREFIX")
+	    line=$(python3 $BK_BIN_PATH/formulizer.py ctl "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym "$F_PREFIX")
 	    
         if [ $? -ne 0 ]; then
             echo "could not parse formula" 1>&2
@@ -220,7 +220,7 @@ case "$BK_EXAMINATION" in
         echo "$stderr" | grep "Got invalid permutation from boost" > /dev/null
                 
         if [ $? -eq 0 ]; then
-            line=$(python3 $HOME/BenchKit/formulizer.py ctl "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym --reorder="w2W,ru,f,rs,hf" "$F_PREFIX")
+            line=$(python3 $BK_BIN_PATH/formulizer.py ctl "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=sym --reorder="w2W,ru,f,rs,hf" "$F_PREFIX")
 	        
             if [ $? -ne 0 ]; then
                 echo "could not parse formula" 1>&2
@@ -255,7 +255,7 @@ case "$BK_EXAMINATION" in
         
 		;;
     LTL*)
-        line=$(python3 $HOME/BenchKit/formulizer.py ltl "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=mc "$F_PREFIX")
+        line=$(python3 $BK_BIN_PATH/formulizer.py ltl "$BK_EXAMINATION".xml --timeout=$TIME_CONFINEMENT --backend=mc "$F_PREFIX")
                 
         if [ $? -ne 0 ]; then
             echo "could not parse formula" 1>&2
