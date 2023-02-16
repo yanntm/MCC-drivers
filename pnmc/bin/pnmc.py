@@ -57,22 +57,6 @@ model_bpn_file = os.path.join(os.path.abspath(os.getcwd()), 'model.bpn')
 
 ##################################################################################
 
-# We don't handle colored models.
-with open('iscolored', 'r') as is_colored_file:
-  if is_colored_file.read().rstrip() == "TRUE":
-    cli = [ binpath+ '/itstools/its-tools'
-        , '-pnfolder' , '.'
-        , '-examination', 'StateSpace'
-        , '--reduce', 'STATESPACE'
-        ]  
-    # Launch itstools to unfold
-    printerr(cli)
-    subprocess.call(cli, stdout=sys.stderr)
-    # patch resulting file name
-    os.system("mv model.pnml model.COL.pnml")
-    os.system("mv model.STATESPACE.pnml model.pnml")
-    
-
 
 # Is it a known model?
 # known = not os.path.isfile(os.path.join(os.path.abspath(os.getcwd()), 'NewModel'))
