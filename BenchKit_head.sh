@@ -6,7 +6,7 @@ then
     echo "Tool $BK_TOOL is not supported by this adapter. Please use a tool in : "
     ls */ | grep -v bin		
 else 
-    export BK_BIN_PATH=$BK_BIN_PATH/../$BK_TOOL/bin
+    export BK_BIN_PATH=$BK_BIN_PATH/../$BK_TOOL/bin/
     
     # does the tool support COL models or not ?
     # we put a COL file in their install folder when they do
