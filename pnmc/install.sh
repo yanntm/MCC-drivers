@@ -10,6 +10,6 @@ wget https://github.com/yanntm/caesar.sdd/raw/gh-pages/caesar.sdd ;
 chmod a+x caesar.sdd ; 
 
 # build bytecode only once.
-python -c "import nupn ; import pnmc"
+python3 -c "import nupn ; import pnmc"
 
 cd ..
