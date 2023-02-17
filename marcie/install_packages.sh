@@ -3,5 +3,5 @@
 # install as root
 apt-get update
 
-# packages for ITS-tools unfolder  
+# just to decompress the tool  
 apt-get install unzip
