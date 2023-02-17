@@ -11,7 +11,10 @@ The installation requires a linux Ubuntu x64 machine, like the VM of the contest
 
  1. Grab this repository :
 ```
-
+export VERSION=0.0.1
+wget https://github.com/yanntm/MCC-drivers/archive/refs/tags/v$VERSION.tar.gz
+tar xvzf v$VERSION.tar.gz
+mv MCC-drivers-$VERSION/* .
 ```
 
 The "Releases" on the right might contain a more recent version so adapt the command as needed.  
@@ -23,6 +26,8 @@ The "Releases" on the right might contain a more recent version so adapt the com
  ./install_packages.sh
  exit
  ```
+ 
+ These commands use `apt-get` so might need to be adapted for e.g. a fedora linux distribution.
  
  3. Run the install script to deploy the tools
  
