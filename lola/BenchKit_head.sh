@@ -5,6 +5,7 @@ export DIR=$(pwd)
 export BIN_DIR=$BK_BIN_PATH
 echo "bin directory: $BIN_DIR"
 echo "current directory: $DIR"
+export PATH=$BIN_DIR:$PATH
 
 if [ "$BK_INPUT" == "GPPP-PT-C0010N1000000000" ] 
 then 
