@@ -10,6 +10,21 @@
 
 # BK_EXAMINATION: it is a string that identifies your "examination"
 
+# configure LTSmin to use a maximum of XGB of memory, this is neccessary
+# because sysconf does not work in docker
+# cg_ does not work on cluster with OAR but not cg_memory set
+# cannot bound LTSmin memory if in portfolio with other methods...
+# Basically guessing available memory and trying to take it all is a FBI
+# "Fausse Bonne Idee",
+# e.g. it will never support two LTSmin running different problems in parallel.
+# 4 << 30 = 4294967296  4GB
+# 8 << 30 = 8589934592  8GB
+# 15 << 30 = 16106127360  15GB
+# 16 << 30 = 17179869184  16GB
+if [[ -z "${LTSMIN_MEM_SIZE}" ]]; then
+    export LTSMIN_MEM_SIZE=16106127360    
+fi
+
 
 export PATH=$BK_BIN_PATH:$PATH
 
