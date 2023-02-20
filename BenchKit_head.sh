@@ -1,6 +1,14 @@
 #!/bin/bash
 
 
+echo "Invoking MCC driver with "
+echo "BK_TOOL=$BK_TOOL"
+echo "BK_EXAMINATION=$BK_EXAMINATION"
+echo "BK_BIN_PATH=$BK_BIN_PATH"
+echo "BK_TIME_CONFINEMENT=$BK_TIME_CONFINEMENT"
+echo "BK_INPUT=$BK_INPUT"
+
+
 # check tool name
 if [ ! -d $BK_BIN_PATH/../$BK_TOOL ] ;
 then
@@ -15,6 +23,7 @@ fi
 # unfold as required
 grep "TRUE" iscolored > /dev/null
 if [ $? == 0 ]; then
+	echo "Model is COL"
 	# COL model, check if it is supported
 	grep "^${BK_EXAMINATION} COL$" $BK_BIN_PATH/../$BK_TOOL/SupportedExamination.txt
 
@@ -46,17 +55,20 @@ if [ $? == 0 ]; then
 	    	fi			
 		else
 			# neither COL nor PT versions of this examination supported
-			echo "Examination $BK_EXAMINATION is not supported by tool $BK_TOOL"
+			echo "Examination $BK_EXAMINATION is not supported by tool $BK_TOOL. Supported examinations :"
+			cat $BK_BIN_PATH/../$BK_TOOL/SupportedExamination.txt
 			echo "DO_NOT_COMPETE"
 			exit 1
 		fi	
 	fi
 else
+	echo "Model is PT"
 	
 	grep "^${BK_EXAMINATION} PT$" $BK_BIN_PATH/../$BK_TOOL/SupportedExamination.txt
 	if [ $? != 0 ]; then
 			# examination not supported
-			echo "Examination $BK_EXAMINATION is not supported by tool $BK_TOOL"
+			echo "Examination $BK_EXAMINATION is not supported by tool $BK_TOOL. Supported examinations :"
+			cat $BK_BIN_PATH/../$BK_TOOL/SupportedExamination.txt
 			echo "DO_NOT_COMPETE"
 			exit 1				
 	fi	
