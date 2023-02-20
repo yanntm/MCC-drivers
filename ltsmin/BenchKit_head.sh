@@ -23,24 +23,6 @@ EXTRA_TECHNIQUES=""
 
 hostname 1>&2
 
-# unfold step
-grep "TRUE" iscolored > /dev/null
-if [ $? == 0 ]; then
-    $BK_BIN_PATH'/itstools/its-tools' '-pnfolder' '.' '-examination' $BK_EXAMINATION '--reduce-single' 'STATESPACE'   
-    # patch resulting file name
-    mkdir -p unf$BK_EXAMINATION
-    mv model.STATESPACE.pnml unf$BK_EXAMINATION/model.pnml
-	if [ -f $BK_EXAMINATION.xml ] ; then 
-		mv $BK_EXAMINATION.STATESPACE.xml unf$BK_EXAMINATION/$BK_EXAMINATION.xml 
-	fi
-	cd unf$BK_EXAMINATION
-	if [[ $BK_EXAMINATION == *"Fireability" ]] ; then
-			NEWEXAM=$(echo $BK_EXAMINATION | sed s/Fireability/Cardinality/g)
-			mv $BK_EXAMINATION.xml $NEWEXAM.xml
-			export BK_EXAMINATION=$NEWEXAM
-	fi		
-fi
-
 
 case "$BK_EXAMINATION" in
 
