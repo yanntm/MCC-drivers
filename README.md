@@ -2,6 +2,15 @@
 
 A driver to adapt various tools to Model Checking Contest formats.
 
+## Contents
+
+Each subfolder contains a tool and its MCC driver "BenchKit_head.sh".
+
+The parent folder contains a front-end that looks at variable `BK_TOOL` to decide which tool is wanted, 
+and verifies that the target tool supports the given `BK_EXAMINATION`. If the target tool supports
+ the examination only in PT mode, we add an unfolding step before invoking the tool. 
+ These verifications use a file "SupportedExamination.txt" placed in each tool folder.
+  
 
 ## Installation
 
