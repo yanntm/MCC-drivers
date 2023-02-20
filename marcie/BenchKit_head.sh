@@ -47,6 +47,8 @@ case "$BK_EXAMINATION" in
   ;;
 
   *)
+  	# other examinations that are not supported : OneSafe, StableMarking, QuasiLiveness, Liveness
+  	echo "DO_NOT_COMPETE"
     echo "$0: Wrong invocation:" >> $BK_LOG_FILE
     exit 1
     ;;
