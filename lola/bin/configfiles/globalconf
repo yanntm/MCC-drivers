@@ -1,0 +1,11 @@
+pnml
+xml
+threads=4
+timelimit=1800
+stateequation=par
+findpath=par
+mcc
+memorylimit=16G
+encoder=simplecompressed
+donotcomputecapacities
+

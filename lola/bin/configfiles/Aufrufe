@@ -1,0 +1,24 @@
+CTLCardinality:
+lola --conf=ctlcardinalityconf INPUTS/****/model.pnml --formula=INPUTS/****/CTLCardinality.xml --verdictfile=INPUTS/****/GenericPropertiesVerdict.xml
+CTLFireability:
+lola --conf=ctlfireabilityconf INPUTS/****/model.pnml --formula=INPUTS/****/CTLFireability.xml --verdictfile=INPUTS/****/GenericPropertiesVerdict.xml
+LTLCardinality:
+lola --conf=ltlcardinalityconf INPUTS/****/model.pnml --formula=INPUTS/****/LTLCardinality.xml --verdictfile=INPUTS/****/GenericPropertiesVerdict.xml
+LTLFireability:
+lola --conf=ltlfireabilityconf INPUTS/****/model.pnml --formula=INPUTS/****/LTLFireability.xml --verdictfile=INPUTS/****/GenericPropertiesVerdict.xml
+ReachabilityCardinality:
+lola --conf=reachabilitycardinalityconf INPUTS/****/model.pnml --formula=INPUTS/****/ReachabilityCardinality.xml --verdictfile=INPUTS/****/GenericPropertiesVerdict.xml
+ReachabilityFireability:
+lola --conf=reachabilityfireabilityconf INPUTS/****/model.pnml --formula=INPUTS/****/ReachabilityFireability.xml --verdictfile=INPUTS/****/GenericPropertiesVerdict.xml
+UpperBounds:
+lola --conf=upperboundsconf INPUTS/****/model.pnml --formula=INPUTS/****/UpperBounds.xml
+ReachabilityDeadlock:
+lola --conf=globalconf INPUTS/****/model.pnml --check=deadlockfreedom
+OneSafe:
+lola --conf=globalconf INPUTS/****/model.pnml --check=OneSafe
+StableMarking:
+lola --conf=globalconf INPUTS/****/model.pnml --check=StableMarking
+Liveness:
+lola --conf=globalconf INPUTS/****/model.pnml --check=Liveness
+QuasiLiveness:
+lola --conf=globalconf INPUTS/****/model.pnml --check=QuasiLiveness
