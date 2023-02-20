@@ -93,7 +93,7 @@ case "$BK_EXAMINATION" in
             if [ $computed == 0 ]; then
                 echo "FORMULA $name $max_sum TECHNIQUES DECISION_DIAGRAMS PARALLEL_PROCESSING USE_NUPN$EXTRA_TECHNIQUES"                        
             else
-                echo "FORMULA $name CANNOT_COMPUTE"
+                echo "Could not compute solution for formula : $name"
             fi
         done
         ;;
@@ -135,7 +135,7 @@ case "$BK_EXAMINATION" in
                 else
                     
                     if [[ $not_completed == 1 ]]; then
-                        echo "FORMULA $name CANNOT_COMPUTE"
+                        echo "Could not compute solution for formula : $name"
                     else
                         echo "FORMULA $name FALSE TECHNIQUES DECISION_DIAGRAMS PARALLEL_PROCESSING USE_NUPN$EXTRA_TECHNIQUES"
                     fi
@@ -196,7 +196,7 @@ case "$BK_EXAMINATION" in
                         fi
                     else
                         if [[ $not_completed == 1 ]] && [[ $all_violated == 1 ]]; then
-                            echo "FORMULA $name CANNOT_COMPUTE"
+                            echo "Could not compute solution for formula : $name"
                         elif [[ $type == "EF" ]]; then
     	                    echo "FORMULA $name FALSE TECHNIQUES DECISION_DIAGRAMS PARALLEL_PROCESSING USE_NUPN$EXTRA_TECHNIQUES"
                         else 
@@ -250,7 +250,7 @@ case "$BK_EXAMINATION" in
                 if [ $? -eq 0 ]; then
                     echo "FORMULA $name TRUE TECHNIQUES DECISION_DIAGRAMS PARALLEL_PROCESSING USE_NUPN$EXTRA_TECHNIQUES"
                 else
-                    echo "FORMULA $name CANNOT_COMPUTE"
+                    echo "Could not compute solution for formula : $name"
                 fi
             fi                        
         
@@ -282,7 +282,7 @@ case "$BK_EXAMINATION" in
             tlf=$?
 
             if [ $htf -eq 0 -o $tlf -eq 0 ]; then
-                echo "FORMULA $name CANNOT_COMPUTE"
+                echo "Could not compute solution for formula : $name"
             else        
                 echo "$info" | grep "$line$" -A1 | grep "Accepting cycle FOUND at depth" > /dev/null
                 
@@ -293,7 +293,7 @@ case "$BK_EXAMINATION" in
                     if [ $? -eq 0 ]; then
         	            echo "FORMULA $name TRUE TECHNIQUES EXPLICIT PARALLEL_PROCESSING USE_NUPN$EXTRA_TECHNIQUES"
         	        else
-                        echo "FORMULA $name CANNOT_COMPUTE"
+                        echo "Could not compute solution for formula : $name"
         	        fi
                 fi
             fi
