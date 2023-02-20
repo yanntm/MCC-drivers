@@ -1,19 +1,28 @@
 #!/bin/bash
 
 
+# check tool name
 if [ ! -d $BK_BIN_PATH/../$BK_TOOL ] ;
 then
     echo "Tool $BK_TOOL is not supported by this adapter. Please use a tool in : "
     ls */ | grep -v bin		
-else 
-    export BK_BIN_PATH=$BK_BIN_PATH/../$BK_TOOL/bin/
-    
-    # does the tool support COL models or not ?
-    # we put a COL file in their install folder when they do
-    if [ ! -f $BK_BIN_PATH/../COL ] ; then
-		grep "TRUE" iscolored > /dev/null
-		# ok we need an unfold step; tool does not support COL and model is COL	
+	echo "DO_NOT_COMPETE"
+	exit 1
+fi
+
+
+# check support of current examination by current tool
+# unfold as required
+grep "TRUE" iscolored > /dev/null
+if [ $? == 0 ]; then
+	# COL model, check if it is supported
+	grep "^${BK_EXAMINATION} COL$" $BK_BIN_PATH/../$BK_TOOL/SupportedExamination.txt
+
+	if [ $? != 0 ]; then
+		# it's not directly supported, maybe PT is ok
+		grep "^${BK_EXAMINATION} PT$" $BK_BIN_PATH/../$BK_TOOL/SupportedExamination.txt
 		if [ $? == 0 ]; then
+			# PT version of examination is supported we can unfold
 			# currently a very basic unfolding is performed, with practically no reductions (STATESPACE).
 			# this allows to treat all queries.
 		    $BK_BIN_PATH'/itstools/its-tools' '-pnfolder' '.' '-examination' $BK_EXAMINATION '--reduce-single' 'STATESPACE'   
@@ -34,14 +43,29 @@ else
 				NEWEXAM=$(echo $BK_EXAMINATION | sed s/Fireability/Cardinality/g)
 				mv $BK_EXAMINATION.xml $NEWEXAM.xml
 				export BK_EXAMINATION=$NEWEXAM
-	    	fi	    	    		
-		fi
-    fi
-    # invoke the appropriate tool
-    $BK_BIN_PATH/../BenchKit_head.sh
+	    	fi			
+		else
+			# neither COL nor PT versions of this examination supported
+			echo "Examination $BK_EXAMINATION is not supported by tool $BK_TOOL"
+			echo "DO_NOT_COMPETE"
+			exit 1
+		fi	
+	fi
+else
+	
+	grep "^${BK_EXAMINATION} PT$" $BK_BIN_PATH/../$BK_TOOL/SupportedExamination.txt
+	if [ $? != 0 ]; then
+			# examination not supported
+			echo "Examination $BK_EXAMINATION is not supported by tool $BK_TOOL"
+			echo "DO_NOT_COMPETE"
+			exit 1				
+	fi	
 fi
 
-
+# ok looks good, call the tool.
+export BK_BIN_PATH=$BK_BIN_PATH/../$BK_TOOL/bin/
+# invoke the appropriate tool
+$BK_BIN_PATH/../BenchKit_head.sh
 
 
 

@@ -1,0 +1,14 @@
+StateSpace PT
+
+UpperBounds PT
+
+ReachabilityDeadlock PT
+
+ReachabilityFireability PT
+ReachabilityCardinality PT
+
+CTLCardinality PT
+CTLFireability PT
+
+LTLCardinality PT
+LTLFireability PT

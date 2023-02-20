@@ -1,0 +1,25 @@
+StateSpace COL
+
+UpperBounds COL
+# TODO : adapters for other Global Properties
+
+ReachabilityDeadlock COL
+
+ReachabilityFireability COL
+ReachabilityCardinality COL
+
+CTLCardinality COL
+CTLFireability COL
+
+StateSpace PT
+
+UpperBounds PT
+# TODO : adapters for other Global Properties
+
+ReachabilityDeadlock PT
+
+ReachabilityFireability PT
+ReachabilityCardinality PT
+
+CTLCardinality PT
+CTLFireability PT

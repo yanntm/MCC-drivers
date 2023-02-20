@@ -1,0 +1,17 @@
+StateSpace PT
+
+UpperBounds PT
+
+ReachabilityDeadlock PT
+OneSafe PT
+StableMarking PT
+QuasiLiveness PT
+Liveness PT
+
+ReachabilityFireability PT
+ReachabilityCardinality PT
+
+# CTL is currently disabled due to bad results and/or crashes
+# CTLCardinality PT
+# CTLFireability PT
+
