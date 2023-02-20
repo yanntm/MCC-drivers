@@ -2,7 +2,7 @@ echo "starting LoLA"
 echo "BK_INPUT $BK_INPUT"
 echo "BK_EXAMINATION: $BK_EXAMINATION"
 export DIR=$(pwd)
-export BIN_DIR="/home/mcc/BenchKit/bin"
+export BIN_DIR=$BK_BIN_PATH
 echo "bin directory: $BIN_DIR"
 echo "current directory: $DIR"
 
