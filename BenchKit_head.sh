@@ -31,6 +31,13 @@ if [ $? == 0 ]; then
 		# it's not directly supported, maybe PT is ok
 		grep "^${BK_EXAMINATION} PT$" $BK_BIN_PATH/../$BK_TOOL/SupportedExamination.txt
 		if [ $? == 0 ]; then
+			# COL and PT versions of OneSafe disagree, simply unfolding won't do it
+			if [ $BK_EXAMINATION == "OneSafe" ] ; then
+					echo "Examination $BK_EXAMINATION for COL models is not supported by tool $BK_TOOL."
+					# we can still deal with some other OneSafe properties, so CC is appropriate
+					echo "CANNOT_COMPUTE"
+					exit 1			
+			fi
 			# PT version of examination is supported we can unfold
 			# currently a very basic unfolding is performed, with practically no reductions (STATESPACE).
 			# this allows to treat all queries.
