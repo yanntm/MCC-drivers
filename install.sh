@@ -10,3 +10,9 @@ do
 	fi
 	cd ..
 done
+
+
+grep "timeout" ~/.bashrc > /dev/null
+if [ $? != 0 ]; then
+	echo "alias timeout=$PWD/bin/timeout.pl" >> ~/.bashrc
+fi 
