@@ -30,7 +30,7 @@ export PATH=$BK_BIN_PATH:$PATH
 
 TIME_CONFINEMENT=$((${BK_TIME_CONFINEMENT-3600}-30))
 
-F_PREFIX=${F_PREFIX-"/tmp"}
+F_PREFIX=${F_PREFIX-"/tmp/$$"}
 mkdir -p "$F_PREFIX"
 F_PREFIX="--prefix=$F_PREFIX"
 
