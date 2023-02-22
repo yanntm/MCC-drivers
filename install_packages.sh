@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -x
+
 # install as root
 apt-get update
 
