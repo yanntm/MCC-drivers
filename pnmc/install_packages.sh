@@ -5,5 +5,5 @@
 apt-get update
 
 # python for the driver/translator
-apt-get install python3 
+apt-get -y install python3 
 

@@ -4,4 +4,4 @@
 apt-get update
 
 # just to decompress the tool  
-apt-get install unzip
+apt-get -y install unzip

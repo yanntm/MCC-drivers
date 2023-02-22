@@ -4,7 +4,7 @@
 apt-get update
 
 # packages for ITS-tools unfolder  
-apt-get install ca-certificates python3 unzip openjdk-17-jdk psmisc
+apt-get -y install ca-certificates python3 unzip openjdk-17-jdk psmisc
 
 for i in */install_packages.sh ; 
 do
