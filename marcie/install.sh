@@ -8,3 +8,4 @@ unzip -j marcie.zip marcie-linux64-20191118/bin/marcie -d .
 
 mv marcie bin/
 
+rm marcie.zip
