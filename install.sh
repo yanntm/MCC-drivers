@@ -12,7 +12,10 @@ do
 done
 
 
-grep "timeout" ~/.bashrc > /dev/null
+grep "timeout" ~/.profile > /dev/null
 if [ $? != 0 ]; then
-	echo "alias timeout=$PWD/bin/timeout.pl" >> ~/.bashrc
-fi 
+	echo "alias timeout=$PWD/bin/timeout.pl" >> ~/.profile
+	echo "shopt -s expand_aliases" >> ~/.profile
+fi
+source ~/.profile
+ 
