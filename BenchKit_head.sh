@@ -9,6 +9,13 @@ echo "BK_TIME_CONFINEMENT=$BK_TIME_CONFINEMENT"
 echo "BK_INPUT=$BK_INPUT"
 
 
+
+if [[ $BK_TOOL == *xred ]] ;
+	then
+		export REDUCING="TRUE"
+		export BK_TOOL=$(echo $BK_TOOL | sed 's/xred//g')		
+	fi
+
 # check tool name
 if [ ! -d $BK_BIN_PATH/../$BK_TOOL ] ;
 then
@@ -18,6 +25,18 @@ then
 	exit 1
 fi
 
+
+if [ -z ${REDUCING+x} ]; 
+	then 
+		echo "Not applying reductions."; 
+	else 
+		echo "Applying reductions before tool $BK_TOOL";
+		# ok looks good, call the tool.
+		export BK_BIN_PATH=$BK_BIN_PATH/../reducer/bin/
+		# invoke the appropriate tool
+		$BK_BIN_PATH/../BenchKit_head.sh
+		exit 0		 
+	fi
 
 # check support of current examination by current tool
 # unfold as required
