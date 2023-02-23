@@ -107,7 +107,7 @@ def main():
     
     ns = "http://mcc.lip6.fr/"
     command_sym = 'pnml2lts-sym model.pnml --lace-workers=4 --vset=lddmc --saturation=sat -r%s --sylvan-sizes=20,28,20,28 %s' % (args.reorder, args.extraopts)
-    command_mc = 'pnml2lts-mc model.pnml -s80%% %s --threads=4' % (args.extraopts)
+    command_mc = 'pnml2lts-mc model.pnml -s80%% %s --procs=4' % (args.extraopts)
     
     tree = etree.parse(args.file).getroot()
     (names, formulas) = parse_xml(tree, ns)
