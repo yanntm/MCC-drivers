@@ -6,7 +6,7 @@ echo "Invoking reducer"
 export BINDIR=$BK_BIN_PATH/../../itstools/bin/
 export MODEL=$(pwd)
 
-$BINDIR/runeclipse.sh $MODEL $BK_EXAMINATION -timeout $BK_TIME_CONFINEMENT -rebuildPNML
+$BINDIR/../runeclipse.sh $MODEL $BK_EXAMINATION -timeout $BK_TIME_CONFINEMENT -rebuildPNML
 
 if [ -f model.sr.pnml ] 
 then
