@@ -52,16 +52,19 @@ if [ $? == 0 ]; then
 		grep "^${BK_EXAMINATION} PT$" $BK_BIN_PATH/../$BK_TOOL/SupportedExamination.txt
 		if [ $? == 0 ]; then
 			# COL and PT versions of OneSafe disagree, simply unfolding won't do it
-			if [ $BK_EXAMINATION == "OneSafe" ] ; then
-					echo "Examination $BK_EXAMINATION for COL models is not supported by tool $BK_TOOL."
+			case "$BK_EXAMINATION" in
+				OneSafe|QuasiLiveness|Liveness|StableMarking)
+					echo "Examination $BK_EXAMINATION for COL models is not supported by tool $BK_TOOL. No direct unfolding is possible however."
 					# we can still deal with some other OneSafe properties, so CC is appropriate
 					echo "CANNOT_COMPUTE"
-					exit 1			
-			fi
+					exit 1	
+					;;
+			esac		
+
 			# PT version of examination is supported we can unfold
 			# currently a very basic unfolding is performed, with practically no reductions (STATESPACE).
 			# this allows to treat all queries.
-		    $BK_BIN_PATH'/itstools/its-tools' '-pnfolder' '.' '-examination' $BK_EXAMINATION '--reduce-single' 'STATESPACE'   
+		    $BK_BIN_PATH'/../itstools/itstools/its-tools' '-pnfolder' '.' '-examination' $BK_EXAMINATION '--reduce-single' 'STATESPACE'   
 		    
 		    # patch resulting file name, build a folder with model.pnml + examination.xml
 	    	mkdir -p unf$BK_EXAMINATION
