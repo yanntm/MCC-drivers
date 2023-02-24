@@ -8,7 +8,8 @@ echo "BK_BIN_PATH=$BK_BIN_PATH"
 echo "BK_TIME_CONFINEMENT=$BK_TIME_CONFINEMENT"
 echo "BK_INPUT=$BK_INPUT"
 
-
+#to avoid annoying complaints about LOCALE from perl scripts
+export LC_ALL=C
 
 if [[ $BK_TOOL == *xred ]] ;
 	then
