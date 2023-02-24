@@ -31,7 +31,7 @@ Currently supported tools (specify using `BK_TOOL` environment variable) :
 
 ## Installation
 
-The installation requires a linux Ubuntu x64 machine, like the VM of the contest.
+The installation requires a linux x64 machine, like the Ubuntu VM of the contest.
 
  0. If you are building a VM we need some basic packages to get started.
  
