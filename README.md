@@ -4,31 +4,55 @@ A driver to adapt various tools to Model Checking Contest formats.
 
 ## Contents
 
-Each subfolder contains a tool and its MCC driver "BenchKit_head.sh".
+Each subfolder contains a tool and its MCC driver "BenchKit_head.sh" as well as references to the original tool this adapter is for (see the readme in each folder).
 
 The parent folder contains a front-end that looks at variable `BK_TOOL` to decide which tool is wanted, 
 and verifies that the target tool supports the given `BK_EXAMINATION`. If the target tool supports
  the examination only in PT mode, we add an unfolding step before invoking the tool. 
  These verifications use a file "SupportedExamination.txt" placed in each tool folder.
-  
+
+The front-end driver additionally supports a "reductions" mode, where its-tools is tasked to produce simpler model/formula pairs if possible.
+This is triggered by appending `xred` to the tool name.
+
+Currently supported tools (specify using `BK_TOOL` environment variable) :
+
+ * itstools : ITS-Tools see https://github.com/yanntm/ITS-Tools-MCC 
+ * ltsmin : LTSMin see https://github.com/utwente-fmt/ltsmin
+ * smart : Smart see https://github.com/asminer/smart
+ * pnmc : PNMC see https://github.com/ahamez/pnmc
+ * lola : Lola see https://theo.informatik.uni-rostock.de/theo-forschung/tools/lola/
+ * marcie : Marcie see https://www-dssz.informatik.tu-cottbus.de/DSSZ/Software/Marcie
+
+ * ltsminxred : LTSMin + ITS-tools based reductions
+ * smartxred : Smart + ITS-tools based reductions
+ * lolaxred : Lola + ITS-tools based reductionssee 
+ * marciexred : Marcie + ITS-tools based reductions
+
 
 ## Installation
 
 The installation requires a linux Ubuntu x64 machine, like the VM of the contest.
 
- 0. If you are building a VM with "standard" paths, you should start in folder "/home/mcc/BenchKit" and clear it.
-
- 1. Grab this repository :
+ 0. If you are building a VM we need some basic packages to get started.
+ 
 ```
-export VERSION=0.0.1
-wget https://github.com/yanntm/MCC-drivers/archive/refs/tags/v$VERSION.tar.gz
-tar xvzf v$VERSION.tar.gz
-mv MCC-drivers-$VERSION/* .
+su
+apt-get update
+apt-get install git ca-certificates
+exit
 ```
 
-The "Releases" on the right might contain a more recent version so adapt the command as needed.  
+ 1. Grab this repository into a cleared `/home/mcc/BenchKit` folder if you are on the VM. But any empty starting folder will do on another machine.
+```
+cd /home/mcc/BenchKit
+rm -rf *
+git clone https://github.com/yanntm/MCC-drivers.git .
+cd itstools
+git clone https://github.com/yanntm/ITS-Tools-MCC.git .
+cd ..
+```
 
- 2. As root, run the `install_packages.sh` script to have the appropriate packages installed.
+ 2. On a VM, as root, run the `install_packages.sh` script to have the appropriate packages installed.
  
  ```
  su
@@ -37,6 +61,7 @@ The "Releases" on the right might contain a more recent version so adapt the com
  ```
  
  These commands use `apt-get` so might need to be adapted for e.g. a fedora linux distribution.
+ The `install_packages.sh` scripts in each tool folder keep track of dependencies.
  
  3. Run the install script to deploy the tools
  
@@ -51,7 +76,6 @@ The "Releases" on the right might contain a more recent version so adapt the com
  * an `examination.xml` file, 
  * if the model is colored, add a file named `iscolored` containing a single line "TRUE".
 
-
 Possible examinations are :
  * Without an `examination.xml` file :
  ** StateSpace, OneSafe, StableMarking, QuasiLiveness, Liveness, ReachabilityDeadlock  
@@ -64,7 +88,7 @@ Possible examinations are :
 export BK_INPUT="MyModel"
 # mandatory, see possible values above
 export BK_EXAMINATION="StateSpace"
-# mandatory, one of the tools/subfolders of this repository. 
+# mandatory, one of the tools/subfolders of this repository.
 export BK_TOOL="ltsmin"
 # this is in seconds, some tools honor the flag but not all
 export BK_TIME_CONFINEMENT="3600"
