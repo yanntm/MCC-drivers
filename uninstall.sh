@@ -1,8 +1,6 @@
 #! /bin/sh
 
 
-rm -rf bin/itstools
-
 for i in */ ; 
 do
 	cd $i
