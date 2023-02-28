@@ -110,7 +110,7 @@ IS_COLORED=iscolored
   java -jar ${PARSER} ${INPUT_PNML} ${INPUT_EXTRA}
   
   # patch problematic stateset names
-  cat ${INPUT_SM} | perl -pe 's/stateset \w+-(\d\d)/stateset ss\1/g' | perl -pe 's/automodel\.\w+-(\d\d)/automodel.ss\1/g' > tmp.sm
+  cat ${INPUT_SM} | perl -pe 's/stateset \S+-(\d\d)/stateset ss\1/g' | perl -pe 's/automodel\.\S+-(\d\d)/automodel.ss\1/g' > tmp.sm
   cp tmp.sm ${INPUT_SM}
       
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SMART/ ; ${SMART}/smart ${INPUT_SM}
