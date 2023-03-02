@@ -9,7 +9,7 @@ export MODEL=$(pwd)
 $BINDIR/runeclipse.sh $MODEL $BK_EXAMINATION -timeout $((BK_TIME_CONFINEMENT / 10)) -rebuildPNML
 
 # prep next tool
-export BK_BIN_PATH=$BK_BIN_PATH/../../$BK_TOOL/bin
+export BK_BIN_PATH=$BK_BIN_PATH/../../$BK_TOOL/bin/
 
 if [ -f $BK_EXAMINATION.solved ]
 then 
