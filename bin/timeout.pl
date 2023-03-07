@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
-$index=0
+$index=0;
 
-if (@ARGV[0] =~ /-s/) {
-	index=2	
+if (@ARGV[0] =~ /-s/){
+	$index=2;	
 }
 
 $time = @ARGV[$index] or die "Arg $index is time limit";
@@ -202,7 +202,7 @@ if (my $pid = pipe_from_fork('BAR')) {
   # print "pipe_from_fork\n";
   # copy to cmd output to stdout
     
-  exec @ARGV[1..$#ARGV];
+  exec @ARGV[($index+1)..$#ARGV];
 }
 exit(0);
 
