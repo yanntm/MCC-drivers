@@ -58,11 +58,10 @@ case "$BK_EXAMINATION" in
         if [[ $not_completed == 1 ]]; then
             echo "CANNOT_COMPUTE"
         else
-		    if grep -q "state space has precisely" "$stderr"; then
-    			states=$(echo "$stderr" | grep "state space has precisely" | cut -d' ' -f 6)
-		    else
-    			states=$(echo "$stderr" | grep "state space has" | cut -d' ' -f 5)
-		    fi		    
+		    states=$(grep "state space has precisely" "$stderr" | cut -d ' ' -f 6)
+		    if [ -z $states ] ; then 
+		    	states=$(echo "$stderr" | grep "state space has" | cut -d' ' -f 5) 
+		    fi		    	    
 		    max_place=$(echo "$stderr" | grep "max token count" | cut -d' ' -f 5)
 		    max_sum=$(echo "$stderr" | grep "Maximum sum of all integer type state variables is:" | cut -d' ' -f 11)
 		    echo "STATE_SPACE STATES $states TECHNIQUES DECISION_DIAGRAMS PARALLEL_PROCESSING USE_NUPN$EXTRA_TECHNIQUES"
