@@ -58,7 +58,7 @@ case "$BK_EXAMINATION" in
         if [[ $not_completed == 1 ]]; then
             echo "CANNOT_COMPUTE"
         else
-		    states=$(grep "state space has precisely" "$stderr" | cut -d ' ' -f 6)
+		    states=$(echo "$stderr" | grep "state space has precisely" | cut -d ' ' -f 6)
 		    if [ -z $states ] ; then 
 		    	states=$(echo "$stderr" | grep "state space has" | cut -d' ' -f 5) 
 		    fi		    	    
