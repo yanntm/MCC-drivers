@@ -46,8 +46,13 @@ The first commit in this folder is a direct extraction from the VM submitted in 
  This is a list of adaptations that were added to the original driver.
  
  * We did a mix of the drivers from 2018 and 2019 in this driver. The 2018 edition uses mostly "pnml2lts-mc", the multi-core and partial order aware explicit engine of LTSMin, while 2019 is focused on the pnml2lts-sym engine, driven by Lace and Sylvan libraries for efficient decision diagram based strategies.
+ 
+ * We patched the driver flags injecting `-precise` to compute exact state counts (though this was after MCC2023 participation)
+ 
+ * We patched some other flags to be consistent with modern releases of LTSMin. 
    
  * Hard coded references to /home/mcc/BenchKit/ are replaced by use of $BK_BIN_PATH
  
  * a script that automates the deployment on a naked VM is provided. 
   
+ * See the history of this folder for more details on the patches introduced, they are more numerous than in most drivers.
