@@ -35,9 +35,11 @@ LoLA is a tool released under GNU AFFERO GENERAL PUBLIC LICENSE v3.
  
 LoLA competed in the MCC from the very first edition in 2012 and almost continuously up to 2021. 
 
-It typically ranked very high in every participation particularly for Reachability (where it dominated the first editions of the contest from 2012 up to 2017) and UpperBounds queries (until Marcie started winning in 2015-2017, but Lola was back to gold in 2018), entered and started winning the CTL category in 2016, entered LTL in 2016 and won the category in 2017. In 2018, while LoLA retained gold in upper bounds and LTL, it was pushed down to silver in reachability and CTL by new competitor Tapaal. In 2019, Tapaal was able to obtain gold in upper bounds, reachability and CTL, so that LoLA was silver in these categories (but still gold in LTL). Participation of LoLA in 2020 was skipped. In 2021, LoLA obtained silver in the (new) GlobalProperties category, bronze in Upper Bounds, Reachability and CTL, and fourth place in LTL. Participation of LoLA in 2022 was skipped too, hence the present adapter.
+It typically ranked very high in every participation particularly for Reachability (where it dominated the first editions of the contest from 2012 up to 2017) and UpperBounds queries (until Marcie started winning in 2015-2017, but Lola was back to gold in 2018), entered and started winning the CTL category in 2016, entered LTL in 2016 and won the category in 2017. 
 
-Despite Tapaal and more recently ITS-Tools being able to beat it on the benchmark models, LoLA remains an extremely solid and efficient tool.
+In 2018, while LoLA retained gold in upper bounds and LTL, it was pushed down to silver in reachability and CTL by new competitor Tapaal. In 2019, LoLA was silver in upper bounds, reachability and CTL categories (but still gold in LTL). Participation of LoLA in 2020 was skipped. In 2021, LoLA obtained silver in the (new) GlobalProperties category, bronze in Upper Bounds, Reachability and CTL, and fourth place in LTL. 
+
+LoLA is an extremely solid competitor in all examinations of the MCC (except StateSpace where it never participated), and an efficient and reliable tool.
  
 The first commit in this folder is a direct extraction from the VM submitted in MCC 2021 and available from the MCC site.
  
