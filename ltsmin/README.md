@@ -40,6 +40,7 @@ In 2019 a symbolic version of LTSMin was submitted, that no longer participated 
 This was the last participation of LTSMin to the MCC.
  
 The first commit in this folder is a direct extraction from the VM submitted in MCC 2019 and available from the MCC site.
+We then mixed in some elements of the 2018 driver. These drivers were originally written by Jeroen Meijer and Tom van Dijk.
  
 ## Edits and changes
  
