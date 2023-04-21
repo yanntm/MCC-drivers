@@ -22,11 +22,13 @@ Currently supported tools (specify using `BK_TOOL` environment variable) :
  * pnmc : PNMC see https://github.com/ahamez/pnmc
  * lola : Lola see https://theo.informatik.uni-rostock.de/theo-forschung/tools/lola/
  * marcie : Marcie see https://www-dssz.informatik.tu-cottbus.de/DSSZ/Software/Marcie
+ * smpt : SMPT see  https://github.com/nicolasAmat/SMPT
 
  * ltsminxred : LTSMin + ITS-tools based reductions
  * smartxred : Smart + ITS-tools based reductions
  * lolaxred : Lola + ITS-tools based reductionssee 
  * marciexred : Marcie + ITS-tools based reductions
+ * smptxred : SMPT + ITS-tools based reductions
 
 
 ## Installation
