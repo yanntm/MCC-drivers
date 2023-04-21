@@ -47,7 +47,13 @@ cd ..
 rm -rf dl/
 tar xvzf smpt.tgz
 rm smpt.tgz
+
+echo "Install Octant"
+wget https://github.com/yanntm/Octant/raw/linux/octant.exe
+
+
 cd ..
+
 
 echo "Please add the following lines in your .bashrc:"
 echo "export PATH=${PWD}/bin:\$PATH"
