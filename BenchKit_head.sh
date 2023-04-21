@@ -7,6 +7,7 @@ echo "BK_EXAMINATION=$BK_EXAMINATION"
 echo "BK_BIN_PATH=$BK_BIN_PATH"
 echo "BK_TIME_CONFINEMENT=$BK_TIME_CONFINEMENT"
 echo "BK_INPUT=$BK_INPUT"
+echo "BK_MEMORY_CONFINEMENT=$BK_MEMORY_CONFINEMENT"
 
 #to avoid annoying complaints about LOCALE from perl scripts
 export LC_ALL=C
