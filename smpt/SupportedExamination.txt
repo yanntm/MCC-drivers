@@ -1,0 +1,7 @@
+
+ReachabilityFireability COL
+ReachabilityCardinality COL
+
+ReachabilityFireability PT
+ReachabilityCardinality PT
+
