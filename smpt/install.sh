@@ -51,7 +51,8 @@ rm smpt.tgz
 echo "Install Octant"
 wget https://github.com/nicolasAmat/Octant/raw/linux/octant.exe
 
-
+chmod a+x *
+chmod a+x ../BenchKit_head.sh
 cd ..
 
 
