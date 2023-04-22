@@ -1,4 +1,4 @@
-#!/bin/env bash
+#! /bin/sh
 
 # Installation script for SMPT
 mkdir -p bin
