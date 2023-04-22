@@ -49,7 +49,7 @@ tar xvzf smpt.tgz
 rm smpt.tgz
 
 echo "Install Octant"
-wget https://github.com/yanntm/Octant/raw/linux/octant.exe
+wget https://github.com/nicolasAmat/Octant/raw/linux/octant.exe
 
 
 cd ..
