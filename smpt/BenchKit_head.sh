@@ -47,6 +47,8 @@ mcc="--mcc"
 techniques="--show-techniques"
 #
 # colored option
+colored=""
+if [ -f iscolored ] ;  then
 if [ `cat iscolored` == "TRUE" ]
 then
     echoerr Colored True
@@ -55,6 +57,8 @@ else
     echoerr Colored False
     colored=""
 fi
+fi
+
 #
 # input model
 model="-n $(pwd)/model.pnml"
