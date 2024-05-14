@@ -24,6 +24,7 @@ then
 	export BK2=$(echo $BK_EXAMINATION | sed 's/Fireability/Cardinality/g') ;
 	cp $BK_EXAMINATION.sr.xml $$/$BK2.xml
 	cp model.sr.pnml $$/model.pnml
+	echo "FALSE" > $$/iscolored
 	cd $$
 	
 	
