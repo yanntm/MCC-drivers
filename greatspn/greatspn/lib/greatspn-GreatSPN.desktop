@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=GreatSPN
+Comment=GreatSPN
+Exec=/opt/greatspn/bin/GreatSPN
+Icon=/opt/greatspn/lib/GreatSPN.png
+Terminal=false
+Type=Application
+Categories=Science
+MimeType=application/x-petrinet-project
