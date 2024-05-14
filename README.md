@@ -23,13 +23,14 @@ Currently supported tools (specify using `BK_TOOL` environment variable) :
  * lola : Lola see https://theo.informatik.uni-rostock.de/theo-forschung/tools/lola/
  * marcie : Marcie see https://www-dssz.informatik.tu-cottbus.de/DSSZ/Software/Marcie
  * smpt : SMPT see  https://github.com/nicolasAmat/SMPT
-
+ * greatspn : GreatSPN see https://github.com/greatspn/SOURCES
+ 
  * ltsminxred : LTSMin + ITS-tools based reductions
  * smartxred : Smart + ITS-tools based reductions
- * lolaxred : Lola + ITS-tools based reductionssee 
+ * lolaxred : Lola + ITS-tools based reductions
  * marciexred : Marcie + ITS-tools based reductions
  * smptxred : SMPT + ITS-tools based reductions
-
+ * greatspnxred : GreatSPN + ITS-tools based reductions 
 
 ## Installation
 
