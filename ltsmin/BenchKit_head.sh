@@ -22,9 +22,10 @@
 # 15 << 30 = 16106127360  15GB
 # 16 << 30 = 17179869184  16GB
 if [[ -z "${LTSMIN_MEM_SIZE}" ]]; then
-    export LTSMIN_MEM_SIZE=16106127360    
+    export LTSMIN_MEM_SIZE=8589934592    
 fi
 
+# NOTE : the MEM limit value has been set to a lower value as higher values could cause various crashes.
 
 export PATH=$BK_BIN_PATH:$PATH
 
