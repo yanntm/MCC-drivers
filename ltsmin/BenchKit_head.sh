@@ -21,8 +21,9 @@
 # 8 << 30 = 8589934592  8GB
 # 15 << 30 = 16106127360  15GB
 # 16 << 30 = 17179869184  16GB
+
 if [[ -z "${LTSMIN_MEM_SIZE}" ]]; then
-    export LTSMIN_MEM_SIZE=8589934592    
+    export LTSMIN_MEM_SIZE=1000000000
 fi
 
 # NOTE : the MEM limit value has been set to a lower value as higher values could cause various crashes.
@@ -43,13 +44,13 @@ hostname 1>&2
 case "$BK_EXAMINATION" in
 
 	StateSpace)
-		{ stderr=$(pnml2lts-sym model.pnml --precise --lace-workers=4 --vset=lddmc --saturation=sat -rw2W,ru,bs,hf \
+		{ stderr=$(pnml2lts-sym model.pnml --precise --vset=lddmc --saturation=sat -rw2W,ru,bs,hf \
 		 --sylvan-sizes=20,28,20,28 --maxsum 2>&1 1>&3-) ;} 3>&1
 		echo "$stderr" 1>&2
 		
 		echo "$stderr" | grep "Got invalid permutation from boost" > /dev/null
 		if [ $? -eq 0 ]; then
-		    { stderr=$(pnml2lts-sym model.pnml --precise --lace-workers=4 --vset=lddmc --saturation=sat -rw2W,ru,f,rs,hf \
+		    { stderr=$(pnml2lts-sym model.pnml --precise --vset=lddmc --saturation=sat -rw2W,ru,f,rs,hf \
 		    --sylvan-sizes=20,28,20,28 --maxsum 2>&1 1>&3-) ;} 3>&1
 		    echo "$stderr" 1>&2
 		fi
