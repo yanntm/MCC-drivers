@@ -1,6 +1,6 @@
 #! /bin/sh
 
-./install_itstools.sh
+#./install_itstools.sh
 
 for i in */ ; 
 do
