@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 # grab archive
 wget --no-check-certificate https://www-dssz.informatik.tu-cottbus.de/track/download.php?id=240 -O marcie.zip
