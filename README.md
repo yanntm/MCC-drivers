@@ -2,6 +2,8 @@
 
 A driver to adapt various tools to Model Checking Contest formats.
 
+If you are interested in this project you might want to look also at companion project https://github.com/yanntm/MCC-server that builds a dockers container hosting these artefacts and offering their service through a simple http API.
+
 ## Contents
 
 Each subfolder contains a tool and its MCC driver "BenchKit_head.sh" as well as references to the original tool this adapter is for (see the readme in each folder).
