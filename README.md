@@ -2,6 +2,8 @@
 
 A driver to adapt various tools to Model Checking Contest formats.
 
+If you are interested in this project you might want to look also at companion project https://github.com/yanntm/MCC-server that builds a dockers container hosting these artefacts and offering their service through a simple http API.
+
 ## Contents
 
 Each subfolder contains a tool and its MCC driver "BenchKit_head.sh" as well as references to the original tool this adapter is for (see the readme in each folder).
@@ -24,13 +26,15 @@ Currently supported tools (specify using `BK_TOOL` environment variable) :
  * marcie : Marcie see https://www-dssz.informatik.tu-cottbus.de/DSSZ/Software/Marcie
  * smpt : SMPT see  https://github.com/nicolasAmat/SMPT
  * greatspn : GreatSPN see https://github.com/greatspn/SOURCES
- 
+ * tapaal : Tapaal see https://github.com/TAPAAL/ more precisely the verifypn component
+    
  * ltsminxred : LTSMin + ITS-tools based reductions
  * smartxred : Smart + ITS-tools based reductions
  * lolaxred : Lola + ITS-tools based reductions
  * marciexred : Marcie + ITS-tools based reductions
  * smptxred : SMPT + ITS-tools based reductions
- * greatspnxred : GreatSPN + ITS-tools based reductions 
+ * greatspnxred : GreatSPN + ITS-tools based reductions
+ * tapaalxred : Tapaal + ITS-tools based reductions
 
 ## Installation
 

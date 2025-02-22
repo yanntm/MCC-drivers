@@ -1,5 +1,3 @@
-StateSpace COL
-
 UpperBounds COL
 
 ReachabilityDeadlock COL
@@ -16,8 +14,6 @@ CTLFireability COL
 
 LTLCardinality COL
 LTLFireability COL
-
-StateSpace PT
 
 UpperBounds PT
 
