@@ -274,8 +274,8 @@ if (my $pid = pipe_from_fork('BAR')) {
     proc_kill_layered($pid, 15); # SIGTERM: polite
     
     # Wait a bit, then brutal kill (SIGKILL) if anything remains
-    sleep 2;
-    proc_kill_layered($pid, 9); # SIGKILL: brutal
+    sleep 1;
+    proc_kill($pid, 9); # SIGKILL: brutal
     
     wait ;
     print "After kill :\n";
