@@ -1,16 +1,15 @@
 #!/usr/bin/perl
 
-use strict;
-use warnings;
+# (No use strict; use warnings; as per request to trust original code)
 
-$index=0;
+$index = 0;
 
-if (@ARGV[0] =~ /-s/){
-  $index=2; 
+if ($ARGV[0] =~ /-s/) {
+    $index = 2; 
 }
 
-$time = @ARGV[$index] or die "Arg $index is time limit";
-$cmd = join (" ",@ARGV[($index+1)..$#ARGV]);
+$time = $ARGV[$index] or die "Arg $index is time limit";
+$cmd = join (" ", @ARGV[($index+1)..$#ARGV]);
 
 # directly off the manual
 # simulate open(FOO, "-|")
@@ -91,6 +90,7 @@ sub proc_gather() {
         ppid => $+{ppid},
         cmd => $+{cmd},
         args => $+{args},
+        depth => undef, # Initialize depth field
       };
       $parproc{$+{ppid}} .= "$+{pid} ";
     }
@@ -169,34 +169,41 @@ sub proc_kill($ $) {
 }
 
 # New function:
-# calculate_depth   - calculate depth of each process in the tree
+# calculate_depth   - calculate depth of each process bottom-up, store in %proc
 # Inputs:
 # $root_pid   - root process ID
 # Returns:
-# hash of pid => depth
+# nothing (updates %proc with depth values)
 # Modifies:
-# nothing
+# %proc (adds depth field)
 
 sub calculate_depth {
-    my ($root_pid) = @_;
-    my %depth; # pid => depth
-    $depth{$root_pid} = 0;
+    my ($pid) = @_;
 
-    sub traverse_depth {
-        my ($pid, $curr_depth) = @_;
+    # Recursive function to compute depth bottom-up
+    sub depth_of {
+        my ($pid) = @_;
+        return $proc{$pid}->{depth} if defined $proc{$pid}->{depth}; # Memoized result
+
         my @children = proc_get_children($pid);
-        for my $child (@children) {
-            $depth{$child} = $curr_depth + 1;
-            traverse_depth($child, $curr_depth + 1);
+        if (!@children) {
+            $proc{$pid}->{depth} = 0; # Leaf node
+        } else {
+            my $max_child_depth = 0;
+            for my $child (@children) {
+                my $child_depth = depth_of($child);
+                $max_child_depth = $child_depth if $child_depth > $max_child_depth;
+            }
+            $proc{$pid}->{depth} = $max_child_depth + 1;
         }
+        return $proc{$pid}->{depth};
     }
 
-    traverse_depth($root_pid, 0);
-    return %depth;
+    depth_of($pid);
 }
 
 # New function:
-# group_by_depth    - group processes by their depth in the tree
+# group_by_depth    - group processes by their depth in %proc
 # Inputs:
 # $root_pid   - root process ID
 # Returns:
@@ -205,17 +212,18 @@ sub calculate_depth {
 # nothing
 
 sub group_by_depth {
-    my ($root_pid) = @_;
-    my %depth = calculate_depth($root_pid);
+    my ($pid) = @_;
+    calculate_depth($pid);
     my %by_depth; # depth => [pid1, pid2, ...]
-    for my $pid (keys %depth) {
-        push @{$by_depth{$depth{$pid}}}, $pid;
+    for my $pid (keys %proc) {
+        next unless defined $proc{$pid}->{depth}; # Skip if depth not computed
+        push @{$by_depth{$proc{$pid}->{depth}}}, $pid;
     }
     return %by_depth;
 }
 
 # New function:
-# proc_kill_layered - kill processes layer-by-layer from deepest to root
+# proc_kill_layered - kill processes layer-by-layer from leaves to root
 # Inputs:
 # $pid      - PID to kill
 # $sig      - signal to send
@@ -236,8 +244,8 @@ sub proc_kill_layered {
     # Find maximum depth
     my $max_depth = (sort { $b <=> $a } keys %by_depth)[0] // 0;
 
-    # Kill from deepest layer to root
-    for my $depth (reverse(0..$max_depth)) {
+    # Kill from shallowest (leaves) to deepest (root)
+    for my $depth (0..$max_depth) {
         my @pids = @{$by_depth{$depth} // []};
         next unless @pids;
         print STDERR "Killing layer $depth ($sig): @pids\n";
@@ -266,7 +274,7 @@ if (my $pid = pipe_from_fork('BAR')) {
     proc_kill_layered($pid, 15); # SIGTERM: polite
     
     # Wait a bit, then brutal kill (SIGKILL) if anything remains
-    sleep 1;
+    sleep 2;
     proc_kill_layered($pid, 9); # SIGKILL: brutal
     
     wait ;
