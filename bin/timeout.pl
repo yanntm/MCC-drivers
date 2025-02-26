@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 
-# (No use strict; use warnings; as per request to trust original code)
-
 $index = 0;
 
 if ($ARGV[0] =~ /-s/) {
@@ -77,25 +75,27 @@ my %parproc;
 sub proc_gather() {
     $PS = $ENV{'PS'} // $defaultPS;
     $PSflags = $ENV{'PSflags'} // $defaultPSflags;
-  open my $ps, "$PS $PSflags |" or die "failed to invoke '$PS $PSflags' - $!\n";
-  while (defined(my $line = <$ps>)) {
-    chomp $line;
-    if ($line =~ /^
-        \s* (?<pid>\d+) \s+
-        (?<ppid>\d+) \s+
-        (?<cmd>\S+)
-        (?<args>.*)
-        $/x) {
-      $proc{$+{pid}} = {
-        ppid => $+{ppid},
-        cmd => $+{cmd},
-        args => $+{args},
-        depth => undef, # Initialize depth field
-      };
-      $parproc{$+{ppid}} .= "$+{pid} ";
+    %proc = ();    # Clear previous data
+    %parproc = (); # Clear previous data
+    open my $ps, "$PS $PSflags |" or die "failed to invoke '$PS $PSflags' - $!\n";
+    while (defined(my $line = <$ps>)) {
+        chomp $line;
+        if ($line =~ /^
+            \s* (?<pid>\d+) \s+
+            (?<ppid>\d+) \s+
+            (?<cmd>\S+)
+            (?<args>.*)
+            $/x) {
+            $proc{$+{pid}} = {
+                ppid => $+{ppid},
+                cmd => $+{cmd},
+                args => $+{args},
+                depth => undef, # Initialize depth field
+            };
+            $parproc{$+{ppid}} .= "$+{pid} ";
+        }
     }
-  }
-  close $ps;
+    close $ps;
 }
 
 # Function:
@@ -108,19 +108,19 @@ sub proc_gather() {
 # nothing
 
 sub proc_get_children($) {
-  my ($pid) = @_;
-  my @arr;
-  my $s;
+    my ($pid) = @_;
+    my @arr;
+    my $s;
 
-  return () unless defined $parproc{$pid};
+    return () unless defined $parproc{$pid};
 
-  $s = $parproc{$pid};
-  while ($s =~ /^(?<pid>\d+) \s+ (?<rest>.*)/x) {
-    push @arr, $+{pid};
-    $s = $+{rest};
-  }
+    $s = $parproc{$pid};
+    while ($s =~ /^(?<pid>\d+) \s+ (?<rest>.*)/x) {
+        push @arr, $+{pid};
+        $s = $+{rest};
+    }
 
-  return @arr;
+    return @arr;
 }
 
 # Function:
@@ -135,14 +135,13 @@ sub proc_get_children($) {
 sub proc_get_children_r($);
 
 sub proc_get_children_r($) {
-  my ($pid) = @_;
-
-  my @chi = proc_get_children $pid;
-  my @res;
-  for my $child (@chi) {
-    push @res, $child, proc_get_children_r $child;
-  }
-  return @res;
+    my ($pid) = @_;
+    my @chi = proc_get_children $pid;
+    my @res;
+    for my $child (@chi) {
+        push @res, $child, proc_get_children_r $child;
+    }
+    return @res;
 }
 
 # Function:
@@ -155,17 +154,16 @@ sub proc_get_children_r($) {
 # negative number of unkilled children on failure, $! is set
 
 sub proc_kill($ $) {
-  my ($pid, $sig) = @_;
-  die "bad pid ($pid)\n" unless $pid =~ /^\d+$/;
-  die "non-existent pid ($pid)\n" unless defined $proc{$pid};
-
-  my @arr = ($pid, proc_get_children_r $pid);
-  print STDERR "Killing ($sig) : @arr \n";
-  if (scalar @arr != kill $sig, @arr) {
-    if ($sig != 9) {
-      print STDERR "Could not kill all the requested processes (@arr): $!\n";
+    my ($pid, $sig) = @_;
+    die "bad pid ($pid)\n" unless $pid =~ /^\d+$/;
+    die "non-existent pid ($pid)\n" unless defined $proc{$pid};
+    my @arr = ($pid, proc_get_children_r $pid);
+    print STDERR "Killing ($sig) : @arr \n";
+    if (scalar @arr != kill $sig, @arr) {
+        if ($sig != 9) {
+            print STDERR "Could not kill all the requested processes (@arr): $!\n";
+        }
     }
-  }
 }
 
 # New function:
@@ -179,15 +177,12 @@ sub proc_kill($ $) {
 
 sub calculate_depth {
     my ($pid) = @_;
-
-    # Recursive function to compute depth bottom-up
     sub depth_of {
         my ($pid) = @_;
-        return $proc{$pid}->{depth} if defined $proc{$pid}->{depth}; # Memoized result
-
+        return $proc{$pid}->{depth} if defined $proc{$pid}->{depth};
         my @children = proc_get_children($pid);
         if (!@children) {
-            $proc{$pid}->{depth} = 0; # Leaf node
+            $proc{$pid}->{depth} = 0;
         } else {
             my $max_child_depth = 0;
             for my $child (@children) {
@@ -198,7 +193,6 @@ sub calculate_depth {
         }
         return $proc{$pid}->{depth};
     }
-
     depth_of($pid);
 }
 
@@ -214,9 +208,9 @@ sub calculate_depth {
 sub group_by_depth {
     my ($pid) = @_;
     calculate_depth($pid);
-    my %by_depth; # depth => [pid1, pid2, ...]
+    my %by_depth;
     for my $pid (keys %proc) {
-        next unless defined $proc{$pid}->{depth}; # Skip if depth not computed
+        next unless defined $proc{$pid}->{depth};
         push @{$by_depth{$proc{$pid}->{depth}}}, $pid;
     }
     return %by_depth;
@@ -237,24 +231,35 @@ sub proc_kill_layered {
     die "bad pid ($pid)\n" unless $pid =~ /^\d+$/;
     die "non-existent pid ($pid)\n" unless defined $proc{$pid};
 
-    # Gather process tree and group by depth
+    # Gather initial process tree
     proc_gather();
     my %by_depth = group_by_depth($pid);
-    
-    # Find maximum depth
     my $max_depth = (sort { $b <=> $a } keys %by_depth)[0] // 0;
 
-    # Kill from shallowest (leaves) to deepest (root)
+    # Kill processes at depth <= current depth, including all their descendants
     for my $depth (0..$max_depth) {
-        my @pids = @{$by_depth{$depth} // []};
-        next unless @pids;
-        print STDERR "Killing layer $depth ($sig): @pids\n";
-        my $killed = kill $sig, @pids;
-        if ($killed != scalar(@pids)) {
-            print STDERR "Could not kill all processes in layer $depth (@pids): $!\n";
+        my @pids_to_kill;
+        # Collect all PIDs at depth <= current depth
+        for my $d (0..$depth) {
+            push @pids_to_kill, @{$by_depth{$d} // []};
         }
-        sleep 1; # Yield 1 second between layers
-        proc_gather(); # Refresh process list to catch respawns
+        next unless @pids_to_kill;
+
+        # For each PID at this depth or lower, include all its descendants
+        my @all_pids;
+        for my $target_pid (@pids_to_kill) {
+            push @all_pids, $target_pid, proc_get_children_r($target_pid);
+        }
+        # Remove duplicates while preserving order (if needed)
+        my %seen;
+        @all_pids = grep { !$seen{$_}++ } @all_pids;
+
+        print STDERR "Killing layer up to depth $depth ($sig): @all_pids\n";
+        my $killed = kill $sig, @all_pids;
+        if ($killed != scalar(@all_pids)) {
+            print STDERR "Could not kill all processes up to depth $depth (@all_pids): $!\n";
+        }
+        sleep 0.1; # Short sleep for cleanup/context switch
     }
 }
 
@@ -262,39 +267,28 @@ select STDOUT;
 $| = 1; 
 
 if (my $pid = pipe_from_fork('BAR')) {
-  $SIG{ALRM} = sub {
-    print "TIME LIMIT: Killed by timeout after $time seconds \n";
-    system ("head -2 /proc/meminfo");
+    $SIG{ALRM} = sub {
+        print "TIME LIMIT: Killed by timeout after $time seconds \n";
+        system("head -2 /proc/meminfo");
+        $PS = $ENV{'PS'} // $defaultPS;
+        $PSflags = $ENV{'PSflags'} // $defaultPSflags;
+        proc_kill_layered($pid, 15); # SIGTERM layered, up to each depth
+        sleep 0.1; # Short final wait
+        proc_gather(); # Refresh for final kill
+        proc_kill($pid, 9); # SIGKILL to all remaining
+        wait;
+        print "After kill :\n";
+        system("head -2 /proc/meminfo");
+        exit 137;
+    };
 
-    # Let the user override the ps program location and flags
-    $PS = $ENV{'PS'} // $defaultPS;
-    $PSflags = $ENV{'PSflags'} // $defaultPSflags;
-
-    # Polite termination (SIGTERM) layer-by-layer
-    proc_kill_layered($pid, 15); # SIGTERM: polite
-    
-    # Wait a bit, then brutal kill (SIGKILL) if anything remains
-    sleep 1;
-    proc_kill($pid, 9); # SIGKILL: brutal
-    
-    wait ;
-    print "After kill :\n";
-    system ("head -2 /proc/meminfo");
-    exit 137 ;
-  };
-
-  alarm $time;
-  # parent
-  select BAR;
-  $| = 1;
-  select STDOUT;
-  while (<BAR>) { print; }
-  close BAR;
+    alarm $time;
+    select BAR;
+    $| = 1;
+    select STDOUT;
+    while (<BAR>) { print; }
+    close BAR;
 } else {
-  # child
-  # print "pipe_from_fork\n";
-  # copy to cmd output to stdout
-    
-  exec @ARGV[($index+1)..$#ARGV];
+    exec @ARGV[($index+1)..$#ARGV];
 }
 exit(0);
