@@ -110,12 +110,9 @@ sub proc_gather() {
 sub proc_get_children($) {
     my ($pid) = @_;
     my @arr;
-    my $s;
-
     return () unless defined $parproc{$pid};
-
-    $s = $parproc{$pid};
-    while ($s =~ /^(?<pid>\d+) \s+ (?<rest>.*)/x) {
+    my $s = $parproc{$pid};
+    while ($s =~ /^(?<pid>\d+)\s+(?<rest>.*)/x) {
         push @arr, $+{pid};
         $s = $+{rest};
     }
@@ -131,8 +128,7 @@ sub proc_get_children($) {
 # array of children PIDs
 # Modifies:
 # nothing; calls proc_get_children()
-
-sub proc_get_children_r($);
+sub proc_get_children_r($); # Forward declaration
 
 sub proc_get_children_r($) {
     my ($pid) = @_;
@@ -150,19 +146,20 @@ sub proc_get_children_r($) {
 # $pid      - PID to kill
 # $sig      - signal to send
 # Returns:
-# 0 on success
-# negative number of unkilled children on failure, $! is set
-
+# nothing
+# Modifies:
+# kills processes
 sub proc_kill($ $) {
     my ($pid, $sig) = @_;
-    die "bad pid ($pid)\n" unless $pid =~ /^\d+$/;
-    die "non-existent pid ($pid)\n" unless defined $proc{$pid};
+    if (!defined $proc{$pid}) {
+        # print STDERR "Warning: PID $pid not found, skipping kill ($sig)\n";
+        return;
+    }
     my @arr = ($pid, proc_get_children_r $pid);
-    print STDERR "Killing ($sig) : @arr \n";
-    if (scalar @arr != kill $sig, @arr) {
-        if ($sig != 9) {
-            print STDERR "Could not kill all the requested processes (@arr): $!\n";
-        }
+    # print STDERR "Killing ($sig): @arr\n";
+    my $killed = kill $sig, @arr;
+    if ($killed != scalar @arr) {
+        # print STDERR "Could not kill all: killed $killed of " . scalar(@arr) . "\n";
     }
 }
 
@@ -216,6 +213,19 @@ sub group_by_depth {
     return %by_depth;
 }
 
+# Debug: uncomment to trace process tree
+# sub print_tree {
+#    my ($pid, $indent) = @_;
+#    my $depth = $proc{$pid}->{depth} // "N/A";
+#    my $cmd = $proc{$pid}->{cmd};
+#    my $args = $proc{$pid}->{args} || "";
+#    print "  " x $indent . "PID=$pid, PPID=$proc{$pid}->{ppid}, Depth=$depth, Cmd=$cmd $args\n";
+#    my @children = proc_get_children($pid);
+#    for my $child (@children) {
+#        print_tree($child, $indent + 1);
+#    }
+#}
+
 # New function:
 # proc_kill_layered - kill processes layer-by-layer from leaves to root
 # Inputs:
@@ -224,42 +234,31 @@ sub group_by_depth {
 # Returns:
 # nothing
 # Modifies:
-# kills processes; refreshes process list between layers
-
+# kills processes
 sub proc_kill_layered {
     my ($pid, $sig) = @_;
-    die "bad pid ($pid)\n" unless $pid =~ /^\d+$/;
-    die "non-existent pid ($pid)\n" unless defined $proc{$pid};
-
-    # Gather initial process tree
-    proc_gather();
+    if (!defined $proc{$pid}) {
+        # print STDERR "Warning: PID $pid not found, skipping layered kill\n";
+        return;
+    }
     my %by_depth = group_by_depth($pid);
     my $max_depth = (sort { $b <=> $a } keys %by_depth)[0] // 0;
 
-    # Kill processes at depth <= current depth, including all their descendants
     for my $depth (0..$max_depth) {
-        my @pids_to_kill;
-        # Collect all PIDs at depth <= current depth
-        for my $d (0..$depth) {
-            push @pids_to_kill, @{$by_depth{$d} // []};
-        }
+        my @pids_to_kill = @{$by_depth{$depth} // []};
         next unless @pids_to_kill;
-
-        # For each PID at this depth or lower, include all its descendants
         my @all_pids;
         for my $target_pid (@pids_to_kill) {
             push @all_pids, $target_pid, proc_get_children_r($target_pid);
         }
-        # Remove duplicates while preserving order (if needed)
         my %seen;
         @all_pids = grep { !$seen{$_}++ } @all_pids;
-
-        print STDERR "Killing layer up to depth $depth ($sig): @all_pids\n";
+        # print STDERR "Killing layer at depth $depth ($sig): @all_pids\n";
         my $killed = kill $sig, @all_pids;
-        if ($killed != scalar(@all_pids)) {
-            print STDERR "Could not kill all processes up to depth $depth (@all_pids): $!\n";
+        if ($killed != scalar @all_pids) {
+            # print STDERR "Could not kill all at depth $depth: killed $killed of " . scalar(@all_pids) . "\n";
         }
-        sleep 0.1; # Short sleep for cleanup/context switch
+        sleep 1 unless $depth == $max_depth; # No sleep after the last layer
     }
 }
 
@@ -268,16 +267,25 @@ $| = 1;
 
 if (my $pid = pipe_from_fork('BAR')) {
     $SIG{ALRM} = sub {
-        print "TIME LIMIT: Killed by timeout after $time seconds \n";
+        print "TIME LIMIT: Killed by timeout after $time seconds\n";
         system("head -2 /proc/meminfo");
-        $PS = $ENV{'PS'} // $defaultPS;
-        $PSflags = $ENV{'PSflags'} // $defaultPSflags;
-        proc_kill_layered($pid, 15); # SIGTERM layered, up to each depth
-        sleep 0.1; # Short final wait
-        proc_gather(); # Refresh for final kill
-        proc_kill($pid, 9); # SIGKILL to all remaining
-        wait;
-        print "After kill :\n";
+        proc_gather();
+        # print "Gathering processes for PID $pid\n";
+        # print "Initial process tree for PID $pid:\n";
+        # print_tree($pid, 0);
+        proc_kill_layered($pid, 15); # SIGTERM layered
+        proc_gather();
+        # if (defined $proc{$pid}) {
+        #    print "Remaining processes after SIGTERM:\n";
+        #    print_tree($pid, 0);
+        # } else {
+        #    print "No processes remaining for PID $pid after SIGTERM\n";
+        # }
+        sleep 1;
+        proc_kill($pid, 9); # SIGKILL
+        # print "Waiting for all children to terminate...\n";
+        while (wait() != -1) { }
+        print "After kill:\n";
         system("head -2 /proc/meminfo");
         exit 137;
     };
@@ -292,3 +300,4 @@ if (my $pid = pipe_from_fork('BAR')) {
     exec @ARGV[($index+1)..$#ARGV];
 }
 exit(0);
+
