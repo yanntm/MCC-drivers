@@ -25,11 +25,11 @@ fi
 
 if [ ! -x struct ] ; then
 	echo "Installing Tina toolbox"
-	wget --progress=dot:mega https://projects.laas.fr/tina/binaries/tina-3.8.0-amd64-linux.tgz
-	tar xvf tina-3.8.0-amd64-linux.tgz
-	rm tina-3.8.0-amd64-linux.tgz
-	mv tina-3.8.0/bin/* .
-	rm -rf tina-3.8.0/
+	wget --progress=dot:mega https://projects.laas.fr/tina/binaries/tina-3.8.5-amd64-linux.tgz
+	tar xvf tina-3.8.5-amd64-linux.tgz
+	rm tina-3.8.5-amd64-linux.tgz
+	mv tina-3.8.5/bin/* .
+	rm -rf tina-3.8.5/
 	echo "Done"
 	echo ""
 fi
