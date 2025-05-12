@@ -9,7 +9,7 @@ if [ ! -x z3 ] ; then
 	echo "Downloading z3"
 	
 	# use this release for older systems that don't have recent glibc
-	export DLURL=https://github.com/Z3Prover/z3/releases/download/z3-4.13.0/z3-4.13.0-x64-glibc-2.35.zip	
+	export DLURL=https://github.com/Z3Prover/z3/releases/download/z3-4.15.0/z3-4.15.0-x64-glibc-2.39.zip	
 	wget --progress=dot:mega $DLURL -O z3.zip
 
 	echo "Installing z3" 
