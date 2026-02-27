@@ -9,7 +9,7 @@ if [ ! -x z3 ] ; then
 	echo "Downloading z3"
 	
 	# use this release for older systems that don't have recent glibc
-	export DLURL=https://github.com/Z3Prover/z3/releases/download/z3-4.15.0/z3-4.15.0-x64-glibc-2.39.zip	
+	export DLURL=https://github.com/Z3Prover/z3/releases/download/z3-4.16.0/z3-4.16.0-x64-glibc-2.39.zip	
 	wget --progress=dot:mega $DLURL -O z3.zip
 
 	echo "Installing z3" 
@@ -25,11 +25,11 @@ fi
 
 if [ ! -x struct ] ; then
 	echo "Installing Tina toolbox"
-	wget --progress=dot:mega https://projects.laas.fr/tina/binaries/tina-3.8.5-amd64-linux.tgz
-	tar xvf tina-3.8.5-amd64-linux.tgz
-	rm tina-3.8.5-amd64-linux.tgz
-	mv tina-3.8.5/bin/* .
-	rm -rf tina-3.8.5/
+	wget --progress=dot:mega https://projects.laas.fr/tina/binaries/tina-3.9.0-amd64-linux.tgz
+	tar xvf tina-3.9.0-amd64-linux.tgz
+	rm tina-3.9.0-amd64-linux.tgz
+	mv tina-3.9.0/bin/* .
+	rm -rf tina-3.9.0/
 	echo "Done"
 	echo ""
 fi
