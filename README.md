@@ -23,7 +23,7 @@ git clone https://github.com/yanntm/pnmcc-tests.git
 cp -r  pnmcc-tests/* .
 ```
 
-The package contains some perl and shell scripts to run the tool and compares the results to the oracles from https://github.com/yanntm/pnmcc-models-2025.
+The package contains some perl and shell scripts to run the tool and compares the results to the oracles from https://github.com/yanntm/pnmcc-models-2026.
 
 3. Install the oracle files
 
