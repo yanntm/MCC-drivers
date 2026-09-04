@@ -1,109 +1,84 @@
-# MCC-drivers
+# Petri Net Model Checking Competition : Test harness
 
-A driver to adapt various tools to Model Checking Contest formats.
+This project contains a test harness to submit a tool competing in the [Model Checking Contest](https://mcc.lip6.fr) to a regression test suite.
 
-If you are interested in this project you might want to look also at companion project https://github.com/yanntm/MCC-server that builds a dockers container hosting these artefacts and offering their service through a simple http API.
+While it should run anywhere we have bash and perl, it is only really tested on linux since these are the contest conditions.
 
-## Contents
+## Instructions
 
-Each subfolder contains a tool and its MCC driver "BenchKit_head.sh" as well as references to the original tool this adapter is for (see the readme in each folder).
+1. Install your MCC compliant tool
 
-The parent folder contains a front-end that looks at variable `BK_TOOL` to decide which tool is wanted, 
-and verifies that the target tool supports the given `BK_EXAMINATION`. If the target tool supports
- the examination only in PT mode, we add an unfolding step before invoking the tool. 
- These verifications use a file "SupportedExamination.txt" placed in each tool folder.
+This means you now have a folder containing `BenchKit_head.sh`. 
 
-The front-end driver additionally supports a "reductions" mode, where its-tools is tasked to produce simpler model/formula pairs if possible.
-This is triggered by appending `xred` to the tool name.
+In the MCC, this header script should additionally be at the hard coded location `/home/mcc/BenchKit/BenchKit_head.sh`,
+ but for our purposes we only need it to run without issues regardless of the working directory it is invoked from.
 
-Currently supported tools (specify using `BK_TOOL` environment variable) :
+2. Download and deploy this test framework 
 
- * itstools : ITS-Tools see https://github.com/yanntm/ITS-Tools-MCC 
- * ltsmin : LTSMin see https://github.com/utwente-fmt/ltsmin
- * smart : Smart see https://github.com/asminer/smart
- * pnmc : PNMC see https://github.com/ahamez/pnmc
- * lola : Lola see https://theo.informatik.uni-rostock.de/theo-forschung/tools/lola/
- * marcie : Marcie see https://www-dssz.informatik.tu-cottbus.de/DSSZ/Software/Marcie
- * smpt : SMPT see  https://github.com/nicolasAmat/SMPT
- * greatspn : GreatSPN see https://github.com/greatspn/SOURCES
- * tapaal : Tapaal see https://github.com/TAPAAL/ more precisely the verifypn component
-    
- * ltsminxred : LTSMin + ITS-tools based reductions
- * smartxred : Smart + ITS-tools based reductions
- * lolaxred : Lola + ITS-tools based reductions
- * marciexred : Marcie + ITS-tools based reductions
- * smptxred : SMPT + ITS-tools based reductions
- * greatspnxred : GreatSPN + ITS-tools based reductions
- * tapaalxred : Tapaal + ITS-tools based reductions
+You can download as a zip from GitHub or use the below script.
+*NB:* You must unpackage these files in the same folder as `BenchKit_head.sh`.
 
-## Installation
-
-The installation requires a linux x64 machine, like the Ubuntu VM of the contest.
-
- 0. If you are building a VM we need some basic packages to get started.
- 
 ```
-su
-apt-get update
-apt-get install git ca-certificates
-exit
+git clone https://github.com/yanntm/pnmcc-tests.git
+cp -r  pnmcc-tests/* .
 ```
 
- 1. Grab this repository into a cleared `/home/mcc/BenchKit` folder if you are on the VM. But any empty starting folder will do on another machine.
+The package contains some perl and shell scripts to run the tool and compares the results to the oracles from https://github.com/yanntm/pnmcc-models-2025.
+
+3. Install the oracle files
+
+Running the script `./install_oracle.sh` should do the trick.
+
+4. Run one or many tests
+
+Running one test with default settings :
 ```
-cd /home/mcc/BenchKit
-rm -rf *
-git clone https://github.com/yanntm/MCC-drivers.git .
-cd itstools
-git clone https://github.com/yanntm/ITS-Tools-MCC.git .
-cd ..
+./run_test.pl oracle/TokenRing-PT-005-LTLC.out
 ```
 
- 2. On a VM, as root, run the `install_packages.sh` script to have the appropriate packages installed.
- 
- ```
- su
- ./install_packages.sh
- exit
- ```
- 
- These commands use `apt-get` so might need to be adapted for e.g. a fedora linux distribution.
- The `install_packages.sh` scripts in each tool folder keep track of dependencies.
- 
- 3. Run the install script to deploy the tools
- 
- ```
- ./install.sh
- ```
- 
- 4. We are now ready to run any of these tools in MCC mode.
- 
- Build a folder containing :
- * a `model.pnml` file, 
- * an `examination.xml` file, 
- * if the model is colored, add a file named `iscolored` containing a single line "TRUE".
+Specify a timeout in seconds with flag `-t` immediately after the oracle file name. Default is 15 minutes or 900 seconds.
+``` 
+./run_test.pl oracle/TokenRing-PT-005-LTLC.out -t 100
+```
 
-Possible examinations are :
- * Without an `examination.xml` file :
- ** StateSpace, OneSafe, StableMarking, QuasiLiveness, Liveness, ReachabilityDeadlock  
- * *With* an `examination.xml` file :
- ** UpperBounds, ReachabilityFireability, ReachabilityCardinality, CTLFireability, CTLCardinality, LTLFireability, LTLCardinality   
- 
- In this folder, invoke the tool :
- ```
-# Optional, give a name to the model
-export BK_INPUT="MyModel"
-# mandatory, see possible values above
-export BK_EXAMINATION="StateSpace"
-# mandatory, one of the tools/subfolders of this repository.
-export BK_TOOL="ltsmin"
-# this is in seconds, some tools honor the flag but not all
-export BK_TIME_CONFINEMENT="3600"
-# this is in MB, some tools honor the flag
-export BK_MEMORY_CONFINEMENT="16384"
-# mandatory set the path you deployed this repo in
-export BK_BIN_PATH="/home/mcc/BenchKit/bin/" 
-# invoke the driver.
-$BK_BIN_PATH/../BenchKit_head.sh
- ```
- 
+Any additional flags are handed as is to the `BenchKit_head.sh` script. Some tools (e.g. ITS-Tools) support
+additional non MCC compliant flags, and it can help when testing.
+
+Run a series of tests if you have more time (here, every RF=ReachabilityFireability from MCC 2023):
+
+```
+export TEST=oracle/*-RF.out
+export FLAGS="-ltsmin -its -smt"
+(rc=0 ; for MODEL in $TEST ; do ./run_test.pl $MODEL -t 300 $FLAGS || rc=$? ; done; exit $rc)
+```
+
+5. Interpret the results
+
+The command `run_test.pl` returns a zero value only if the test passed. 
+
+The above invocation with `$rc` lets the whole line or set of tests return `0` if and only if all tests were ok. 
+
+You also get traces in the log, prefixed by `[##teamcity ...` (for historical reasons) that indicate whether the tests failed or passed.
+
+To ease your analysis, the `analysis/` folder contains a few scripts that can help build data points in a CSV from these logs. 
+
+The `logs2csv.pl` script may need to be adapted a bit for each tool, but it already can parse raw output logs to produce CSV lines with e.g. number of tests passed and failed, and duration of tests.
+
+For examples of using this repository, see https://github.com/yanntm/MCC-drivers or https://github.com/yanntm/ITS-Tools-MCC that both use this framework to run a test, setup as a GithubAction (see Actions tab for traces). The script is in the .github/workflow/linux.yml file (e.g. https://github.com/yanntm/its-lola/blob/master/.github/workflows/linux.yml) and is pretty self-explanatory.
+
+
+## Tools
+
+Each tool lives in its own folder with a `BenchKit_head.sh`, a
+`SupportedExamination.txt`, an `install.sh` and an `uninstall.sh`; `BK_TOOL`
+selects the folder, and the suffix `xred` (e.g. `BK_TOOL=petrispotxred`) runs
+the ITS-Tools reducer first and hands the residual model and queries to the
+tool. `petrispot/` is the PetriSpot explicit heuristic walk engine, reachability
+of P/T nets only.
+
+## License
+
+This project is made available in the hope it may prove useful. 
+This project source code is released under the terms of [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
+
+(c) Yann Thierry-Mieg. LIP6, Sorbonne Université, CNRS.

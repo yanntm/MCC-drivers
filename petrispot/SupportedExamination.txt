@@ -1,0 +1,4 @@
+ReachabilityDeadlock PT
+
+ReachabilityFireability PT
+ReachabilityCardinality PT
