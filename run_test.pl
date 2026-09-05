@@ -5,11 +5,42 @@ use Cwd;
 
 # count failures
 my $failed= 0;
+my %verdicts = ();
 
 # The total examinations (QuasiLivenessAll, StableMarkingAll, UpperBoundsAll)
-# print one line per object, KEYWORD object verdict, in place of FORMULA
-# lines; an open bound repeats its line with a ? and the last one counts.
-my $TOTAL_LINE = qr/^(QLIVE|STABLE|BOUND) /;
+# ask one question per transition (t<i>) or per place (p<i>), i being the
+# definition index in model.pnml. The tool prints one line per object as it
+# answers, "QLIVE t12 TRUE ...", "BOUND p3 7 ...", and an open bound repeats
+# "BOUND p3 ? lo hi" as its interval moves : the last line of an object counts.
+# The oracle holds the whole vector after the header, opened by the keyword and
+# wrapped over as many lines as needed, whitespace being insignificant :
+#   QLIVE               then one char per transition, T F or ?
+#   STABLE              then one char per place
+#   BOUND               then one token per place, an integer, inf or ?
+my $totalmode = "";
+my @total = ();
+my %totalchar = ( "T" => "TRUE", "F" => "FALSE", "?" => "?" );
+
+sub total_append {
+  my $txt = shift;
+  if ($totalmode eq "BOUND") {
+    $txt =~ s/^\s+|\s+$//g;
+    push @total, split(/\s+/, $txt) if ($txt ne "");
+  } else {
+    $txt =~ s/\s+//g;
+    push @total, map { $totalchar{$_} } split //, $txt;
+  }
+}
+
+# the expected verdict of a formula or of an object of a total examination
+sub expected {
+  my $name = shift;
+  return $verdicts{$name} if (exists $verdicts{$name});
+  if (@total && $name =~ /^[pt](\d+)$/) {
+    return $total[$1];
+  }
+  return undef;
+}
 
 my $title = $ARGV[0];
 chomp $title;
@@ -51,7 +82,6 @@ $ENV{'BK_BIN_PATH'}=getcwd()."/bin/";  # assume this test script lives next to b
 
 
 my $header;
-my %verdicts = ();
 
 select IN ;
 $| = 1 ; # disable buffering
@@ -59,7 +89,12 @@ select STDOUT ;
 $| = 1 ; # disable buffering
 
 while (my $line = <IN>) {
-  if ($line =~ /STATE\_SPACE/ || $line =~ /FORMULA/ || $line =~ $TOTAL_LINE ) {
+  if ($totalmode) {
+    total_append($line);
+  } elsif ($line =~ /^(QLIVE|STABLE|BOUND)\b(.*)$/) {
+    $totalmode = $1;
+    total_append($2);
+  } elsif ($line =~ /STATE\_SPACE/ || $line =~ /FORMULA/ ) {
     my @words = split /\s+/,$line;
     # Note that the final reported Statistic is what will be taken
     $verdicts{@words[1]} = @words[2];
@@ -68,13 +103,18 @@ while (my $line = <IN>) {
 
 close IN;
 
-my $nbtests = keys(%verdicts);
+my $nbtests = keys(%verdicts) + scalar(@total);
 
 print "Test : $title ; ".$nbtests." values to test \n";
 
 print "Control values :\n";
 foreach my $key (sort keys %verdicts) {
   print "$key=$verdicts{$key}\n";
+}
+if (@total) {
+  my %count = ();
+  $count{$_}++ foreach @total;
+  print "total examination : ".join(" ", map { "$_=$count{$_}" } sort keys %count)."\n";
 }
 
 if ($nbtests == 0) {
@@ -104,7 +144,7 @@ my $last = time();
 
 while (my $line = <IN>) {
   print $line;
-  if ($line =~ /STATE\_SPACE/ || $line =~ /\bFORMULA\b/ || $line =~ $TOTAL_LINE )  {
+  if ($line =~ /STATE\_SPACE/ || $line =~ /\bFORMULA\b/ || $line =~ /^(QLIVE|STABLE|BOUND) / )  {
     if ($first) {
       $first = 0;
       my $cur = time();
@@ -116,7 +156,7 @@ while (my $line = <IN>) {
     $formouts{@words[1]} = @words[2];
     
     my $out = @words[2];
-    my $exp =  $verdicts{@words[1]};
+    my $exp =  expected(@words[1]);
     my $tname = @words[1]; #$title.".".@words[1];
     print "##teamcity[testStarted name='$tname']\n";
 	
@@ -153,7 +193,7 @@ foreach my $key (sort keys %formouts) {
 }
 
 $o = keys (%formouts);
-$e = keys (%verdicts);
+$e = keys (%verdicts) + scalar(@total);
 print "\n##teamcity[testStarted name='all']\n";
 if ( $o != $e ) {
 #  unless ( $title =~ /SS/ && $o == 3 && $e == 4) {
