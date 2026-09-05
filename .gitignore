@@ -1,6 +1,2 @@
 INPUTS/
 oracle.tar.gz
-oracle/*-QLA.out
-oracle/*-SMA.out
-oracle/*-UBA.out
-oracle-total.tar.gz
