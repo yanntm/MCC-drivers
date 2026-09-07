@@ -47,10 +47,10 @@ tar xvzf smpt.tgz
 rm smpt.tgz
 
 echo "Install Octant"
-wget https://github.com/nicolasAmat/Octant/raw/linux/octant.exe
+wget https://github.com/nicolasAmat/Octant/raw/linux/octant.exe -O octant.exe
 
 echo "Install uwalk"
-wget https://github.com/dalzilio/hue/raw/linux/uwalk
+wget https://github.com/dalzilio/hue/raw/linux/uwalk -O uwalk
 
 chmod a+x *
 chmod a+x ../BenchKit_head.sh
