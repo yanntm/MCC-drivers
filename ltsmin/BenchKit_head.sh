@@ -44,14 +44,14 @@ hostname 1>&2
 case "$BK_EXAMINATION" in
 
 	StateSpace)
-		{ stderr=$(pnml2lts-sym model.pnml --precise --vset=lddmc --saturation=sat -rw2W,ru,bs,hf \
-		 --sylvan-sizes=20,28,20,28 --maxsum 2>&1 1>&3-) ;} 3>&1
+		{ stderr=$(pnml2lts-sym model.pnml --precise --vset=lddmc --saturation=sat -rw2W,ru,hf \
+		 --sylvan-sizes=20,28,20,28 --lace-workers=4 --maxsum 2>&1 1>&3-) ;} 3>&1
 		echo "$stderr" 1>&2
 		
 		echo "$stderr" | grep "Got invalid permutation from boost" > /dev/null
 		if [ $? -eq 0 ]; then
 		    { stderr=$(pnml2lts-sym model.pnml --precise --vset=lddmc --saturation=sat -rw2W,ru,f,rs,hf \
-		    --sylvan-sizes=20,28,20,28 --maxsum 2>&1 1>&3-) ;} 3>&1
+		    --sylvan-sizes=20,28,20,28 --lace-workers=4 --maxsum 2>&1 1>&3-) ;} 3>&1
 		    echo "$stderr" 1>&2
 		fi
 		

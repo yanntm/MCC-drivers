@@ -100,13 +100,13 @@ def main():
     parser.add_argument('--backend', default='sym', choices=['sym', 'mc'], help='backend to run')
     parser.add_argument('file', help='formula file')
     parser.add_argument('--extraopts', default='', help='add extra options to pnml2lts-*')
-    parser.add_argument('--reorder', default='bs,w2W,ru,hf', help='set reordering strategy')
+    parser.add_argument('--reorder', default='w2W,ru,hf', help='set reordering strategy')
     parser.add_argument('--action', default='action', help='name of action')
     
     args = parser.parse_args()
 
     ns = "http://mcc.lip6.fr/"
-    command_sym = 'pnml2lts-sym model.pnml --vset=lddmc --saturation=sat -r%s  %s' % (args.reorder, args.extraopts)
+    command_sym = 'pnml2lts-sym model.pnml --vset=lddmc --saturation=sat -r%s --sylvan-sizes=20,28,20,28 --lace-workers=4 %s' % (args.reorder, args.extraopts)
     command_mc = 'pnml2lts-mc model.pnml -s80%% %s --procs=4' % (args.extraopts)
     
     tree = etree.parse(args.file).getroot()
