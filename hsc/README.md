@@ -8,6 +8,7 @@ decomposition; Louvain then FORCE) and the first answer wins. No configuration
 dominates on the contest models, hence the portfolio; `hsc` is single threaded
 so the four fit the contest's cores.
 
-`install.sh` copies the binaries from a local libHSC build (`HSC_BUILD`); there
-is no CI publishing them yet. Known limits and the measurements behind the
+`install.sh` downloads the static binaries published by the libHSC CI (branch
+`HSC-Linux` of `yanntm/libHSC`), or copies them from a local build with
+`HSC_BUILD=<build tree>`. Known limits and the measurements behind the
 design: `libHSC_in_MCC.md` in the PetriSpot repository.
