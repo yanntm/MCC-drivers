@@ -7,7 +7,7 @@
 set -e
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 mkdir -p "$DIR/bin"
-for t in hsc hsc-mcc nupn2hsc ; do
+for t in hsc hsc-pn hsc-mcc nupn2hsc ; do
 	if [ -n "$HSC_BUILD" ] ; then
 		cp "$HSC_BUILD/tools/$t" "$DIR/bin/$t"
 	else
