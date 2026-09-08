@@ -13,11 +13,21 @@ MARGIN=${HSC_MARGIN:-5}
 if [ -z "$BK_TIME_CONFINEMENT" ] ; then BK_TIME_CONFINEMENT=3600 ; fi
 TOTAL=$((BK_TIME_CONFINEMENT - MARGIN))
 if [ "$TOTAL" -le 0 ] ; then TOTAL=1 ; fi
-# the memory confinement is shared by the configurations running side by side:
-# each gets its share, so the portfolio cannot exceed the limit as a whole
-NCONF=4
+# the configurations to run (HSC_CONFS, space separated; default all four); the
+# memory confinement is shared by those running side by side, each gets its
+# share so the portfolio cannot exceed the limit as a whole
+declare -A CONF=(
+	[nupn]="--shape nupn"
+	[force]="--shape nupn --force"
+	[louvain]="--shape louvain"
+	[louvain-force]="--shape louvain --force"
+)
+CONFS=(${HSC_CONFS:-nupn force louvain louvain-force})
+for c in "${CONFS[@]}" ; do
+	if [ -z "${CONF[$c]}" ] ; then echo "unknown configuration $c (HSC_CONFS)" ; echo "CANNOT_COMPUTE" ; exit 1 ; fi
+done
 if [ -n "$BK_MEMORY_CONFINEMENT" ] ; then
-	ulimit -v $(( (BK_MEMORY_CONFINEMENT - 256) * 1024 / NCONF ))
+	ulimit -v $(( (BK_MEMORY_CONFINEMENT - 256) * 1024 / ${#CONFS[@]} ))
 fi
 if [ ! -x "$BIN/hsc-pn" ] ; then
 	echo "libHSC binaries not found in $BIN (run install.sh)"
@@ -40,32 +50,26 @@ case "$BK_EXAMINATION" in
 esac
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/hsc-mcc.XXXXXX")
 trap 'kill $(jobs -p) 2> /dev/null; rm -rf "$WORK"' EXIT
-declare -A CONF=(
-	[nupn]="--shape nupn"
-	[force]="--shape nupn --force"
-	[louvain]="--shape louvain"
-	[louvain-force]="--shape louvain --force"
-)
-for c in "${!CONF[@]}" ; do
+for c in "${CONFS[@]}" ; do
 	( timeout "$TOTAL" "$BIN/hsc-pn" -i model.pnml ${CONF[$c]} $QUERY -q > "$WORK/$c.out" 2> "$WORK/$c.err" ; echo $? > "$WORK/$c.status" ) &
 done
 # stop as soon as one configuration has every answer; otherwise wait for all
 complete() { [ "$(grep -c "$PREFIX" "$WORK/$1.out" 2> /dev/null)" -ge "$EXPECTED" ] ; }
 while [ -n "$(jobs -p)" ] ; do
-	for c in "${!CONF[@]}" ; do complete "$c" && break 2 ; done
+	for c in "${CONFS[@]}" ; do complete "$c" && break 2 ; done
 	sleep 0.2
 	if ! wait -n 2> /dev/null ; then break ; fi
 done
 kill $(jobs -p) 2> /dev/null
 # merge: for every answer line (by its second word), the first configuration that has it
 declare -A SEEN
-for c in nupn force louvain louvain-force ; do
+for c in "${CONFS[@]}" ; do
 	while read -r line ; do
 		key=$(echo "$line" | cut -d' ' -f2)
 		if [ -z "${SEEN[$key]}" ] ; then SEEN[$key]=$c ; echo "$line (config $c)" >&2 ; MERGED+=("$line") ; fi
 	done < <(grep "$PREFIX" "$WORK/$c.out" 2> /dev/null)
 done
-for c in "${!CONF[@]}" ; do echo "== $c: exit $(cat "$WORK/$c.status" 2> /dev/null), $(grep -c "$PREFIX" "$WORK/$c.out" 2> /dev/null) answers" ; tail -2 "$WORK/$c.err" ; done
+for c in "${CONFS[@]}" ; do echo "== $c: exit $(cat "$WORK/$c.status" 2> /dev/null), $(grep -c "$PREFIX" "$WORK/$c.out" 2> /dev/null) answers" ; tail -2 "$WORK/$c.err" ; done
 case "$BK_EXAMINATION" in
 	OneSafe)
 		MX=$(printf '%s\n' "${MERGED[@]}" | grep -o 'MAX_TOKEN_IN_PLACE [0-9]*' | head -1 | awk '{print $2}')

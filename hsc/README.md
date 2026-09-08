@@ -10,7 +10,10 @@ the first configuration to answer everything stops the others. No
 configuration dominates on the contest models, hence the portfolio; `hsc-pn`
 is single threaded so the four fit the contest's cores, and each gets a
 quarter of the memory confinement (`ulimit -v`), so the portfolio as a whole
-stays under the limit. What no
+stays under the limit. `HSC_CONFS="louvain-force"` (space separated names
+among `nupn force louvain louvain-force`) runs a subset, a single one with
+the whole memory: the rerun of the best configuration after a portfolio
+sweep. What no
 configuration answered within the confinement is `CANNOT_COMPUTE`.
 
 `install.sh` downloads the static binaries published by the libHSC CI (branch
