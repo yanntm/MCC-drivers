@@ -78,7 +78,10 @@ for c in "${CONFS[@]}" ; do
 	while read -r line ; do
 		key=$(echo "$line" | cut -d' ' -f2)
 		if [ -n "$COLOURED" ] && [ "$key" = "TRANSITIONS" ] ; then continue ; fi
-		if [ -z "${SEEN[$key]}" ] ; then SEEN[$key]=$c ; echo "$line (config $c)" >&2 ; MERGED+=("$line") ; fi
+		# the attribution goes to stdout: the harness ignores lines that are not
+		# answers, and the collected logs keep only stdout, so this is where a
+		# campaign can see which shape and order answered
+		if [ -z "${SEEN[$key]}" ] ; then SEEN[$key]=$c ; echo "answered $key by configuration $c" ; MERGED+=("$line") ; fi
 	done < <(grep "$PREFIX" "$WORK/$c.out" 2> /dev/null)
 done
 for c in "${CONFS[@]}" ; do echo "== $c: exit $(cat "$WORK/$c.status" 2> /dev/null), $(grep -c "$PREFIX" "$WORK/$c.out" 2> /dev/null) answers" ; tail -2 "$WORK/$c.err" ; done
