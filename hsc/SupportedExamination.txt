@@ -1,2 +1,6 @@
 StateSpace PT
 OneSafe PT
+ReachabilityDeadlock PT
+ReachabilityCardinality PT
+ReachabilityFireability PT
+UpperBounds PT

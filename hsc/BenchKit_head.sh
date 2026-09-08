@@ -1,10 +1,11 @@
 #! /bin/bash
-# libHSC in the MCC harness: a portfolio of shape and order configurations run in
-# parallel on the examination, the first answer wins. hsc is single threaded and
-# no configuration dominates (libHSC_in_MCC.md in PetriSpot): the NUPN tree as
-# is, FORCE reordering, Louvain decomposition, Louvain then FORCE.
-# Runs in the model folder (model.pnml). Prints CANNOT_COMPUTE when no
-# configuration answers within the confinement.
+# libHSC in the MCC harness, on hsc-pn (libHSC tools/README.md): a portfolio of
+# shape and order configurations run in parallel on the examination, their
+# FORMULA lines merged, the first complete configuration stopping the others.
+# hsc-pn is single threaded and no configuration dominates (libHSC_in_MCC.md in
+# PetriSpot): the NUPN tree as is, FORCE reordering, Louvain, Louvain + FORCE.
+# Runs in the model folder (model.pnml, <Examination>.xml). Prints
+# CANNOT_COMPUTE for what no configuration answered within the confinement.
 echo "libHSC driver: BK_EXAMINATION=$BK_EXAMINATION BK_INPUT=$BK_INPUT BK_TIME_CONFINEMENT=$BK_TIME_CONFINEMENT"
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 BIN=$DIR/bin
@@ -15,14 +16,19 @@ if [ "$TOTAL" -le 0 ] ; then TOTAL=1 ; fi
 if [ -n "$BK_MEMORY_CONFINEMENT" ] ; then
 	ulimit -v $(( (BK_MEMORY_CONFINEMENT - 256) * 1024 ))
 fi
-if [ ! -x "$BIN/hsc" ] || [ ! -x "$BIN/hsc-mcc" ] || [ ! -x "$BIN/nupn2hsc" ] ; then
+if [ ! -x "$BIN/hsc-pn" ] ; then
 	echo "libHSC binaries not found in $BIN (run install.sh)"
 	echo "CANNOT_COMPUTE"
 	exit 1
 fi
+# the question, the number of answers expected, and the line prefix of an answer
 case "$BK_EXAMINATION" in
-	StateSpace) QUERY='(states R)' ; PATTERN='^STATE_SPACE ' ;;
-	OneSafe) QUERY='(max-value R)' ; PATTERN='^R max-value ' ;;
+	ReachabilityCardinality|ReachabilityFireability|UpperBounds)
+		if [ ! -f "$BK_EXAMINATION.xml" ] ; then echo "Property file $BK_EXAMINATION.xml not found." ; echo "CANNOT_COMPUTE" ; exit 1 ; fi
+		QUERY="--props $BK_EXAMINATION.xml" ; EXPECTED=$(grep -c "<property>" "$BK_EXAMINATION.xml") ; PREFIX='^FORMULA ' ;;
+	ReachabilityDeadlock) QUERY="--deadlock ReachabilityDeadlock" ; EXPECTED=1 ; PREFIX='^FORMULA ' ;;
+	StateSpace) QUERY="--states" ; EXPECTED=4 ; PREFIX='^STATE_SPACE ' ;;
+	OneSafe) QUERY="--max-tokens" ; EXPECTED=1 ; PREFIX='^STATE_SPACE ' ;;
 	*)
 		echo "Examination $BK_EXAMINATION is not supported by libHSC."
 		echo "DO_NOT_COMPETE"
@@ -31,51 +37,42 @@ case "$BK_EXAMINATION" in
 esac
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/hsc-mcc.XXXXXX")
 trap 'kill $(jobs -p) 2> /dev/null; rm -rf "$WORK"' EXIT
-# the model once, its queries stripped; every configuration reads it
-"$BIN/nupn2hsc" model.pnml 2> "$WORK/import.err" | sed '/^(reach /,$d' > "$WORK/model.hsc"
-if [ ! -s "$WORK/model.hsc" ] ; then
-	echo "import failed:" ; cat "$WORK/import.err"
-	echo "CANNOT_COMPUTE"
-	exit 1
-fi
 declare -A CONF=(
-	[nupn]=""
-	[force]="-e (reorder-force)"
-	[louvain]="-e (decompose-louvain)"
-	[louvain-force]="-e (decompose-louvain) -e (reorder-force)"
+	[nupn]="--shape nupn"
+	[force]="--shape nupn --force"
+	[louvain]="--shape louvain"
+	[louvain-force]="--shape louvain --force"
 )
 for c in "${!CONF[@]}" ; do
-	( timeout "$TOTAL" "$BIN/hsc" "$WORK/model.hsc" ${CONF[$c]} -e '(reach R saturate)' -e "$QUERY" > "$WORK/$c.out" 2> "$WORK/$c.err" ; echo $? > "$WORK/$c.status" ) &
+	( timeout "$TOTAL" "$BIN/hsc-pn" -i model.pnml ${CONF[$c]} $QUERY -q > "$WORK/$c.out" 2> "$WORK/$c.err" ; echo $? > "$WORK/$c.status" ) &
 done
-# the first configuration with an answer wins; the others are stopped
-WINNER=""
+# stop as soon as one configuration has every answer; otherwise wait for all
+complete() { [ "$(grep -c "$PREFIX" "$WORK/$1.out" 2> /dev/null)" -ge "$EXPECTED" ] ; }
 while [ -n "$(jobs -p)" ] ; do
-	for c in "${!CONF[@]}" ; do
-		if [ -f "$WORK/$c.status" ] && grep -q "$PATTERN" "$WORK/$c.out" ; then WINNER=$c ; break 2 ; fi
-	done
+	for c in "${!CONF[@]}" ; do complete "$c" && break 2 ; done
+	sleep 0.2
 	if ! wait -n 2> /dev/null ; then break ; fi
 done
-for c in "${!CONF[@]}" ; do
-	if [ -z "$WINNER" ] && [ -f "$WORK/$c.status" ] && grep -q "$PATTERN" "$WORK/$c.out" ; then WINNER=$c ; fi
-done
 kill $(jobs -p) 2> /dev/null
-if [ -z "$WINNER" ] ; then
-	echo "no configuration answered within $TOTAL s"
-	for c in "${!CONF[@]}" ; do echo "== $c: status $(cat "$WORK/$c.status" 2> /dev/null)" ; tail -3 "$WORK/$c.err" ; done
-	echo "CANNOT_COMPUTE"
-	exit 0
-fi
-echo "answered by configuration $WINNER"
-grep -v '^STATE_SPACE\|^R max-value' "$WORK/$WINNER.out"
+# merge: for every answer line (by its second word), the first configuration that has it
+declare -A SEEN
+for c in nupn force louvain louvain-force ; do
+	while read -r line ; do
+		key=$(echo "$line" | cut -d' ' -f2)
+		if [ -z "${SEEN[$key]}" ] ; then SEEN[$key]=$c ; echo "$line (config $c)" >&2 ; MERGED+=("$line") ; fi
+	done < <(grep "$PREFIX" "$WORK/$c.out" 2> /dev/null)
+done
+for c in "${!CONF[@]}" ; do echo "== $c: exit $(cat "$WORK/$c.status" 2> /dev/null), $(grep -c "$PREFIX" "$WORK/$c.out" 2> /dev/null) answers" ; tail -2 "$WORK/$c.err" ; done
 case "$BK_EXAMINATION" in
-	StateSpace)
-		# STATES is a double in the surface: exact only below 2^53
-		grep '^STATE_SPACE ' "$WORK/$WINNER.out"
-		;;
 	OneSafe)
-		MX=$(grep -o 'max-value [0-9]*' "$WORK/$WINNER.out" | head -1 | awk '{print $2}')
+		MX=$(printf '%s\n' "${MERGED[@]}" | grep -o 'MAX_TOKEN_IN_PLACE [0-9]*' | head -1 | awk '{print $2}')
+		if [ -z "$MX" ] ; then echo "CANNOT_COMPUTE" ; exit 0 ; fi
 		if [ "$MX" -le 1 ] ; then V=TRUE ; else V=FALSE ; fi
 		echo "FORMULA OneSafe $V TECHNIQUES DECISION_DIAGRAMS SATURATION"
+		;;
+	*)
+		printf '%s\n' "${MERGED[@]}" | grep "$PREFIX"
+		if [ "${#MERGED[@]}" -lt "$EXPECTED" ] ; then echo "answered ${#MERGED[@]} of $EXPECTED" ; echo "CANNOT_COMPUTE" ; fi
 		;;
 esac
 exit 0
