@@ -13,8 +13,11 @@ MARGIN=${HSC_MARGIN:-5}
 if [ -z "$BK_TIME_CONFINEMENT" ] ; then BK_TIME_CONFINEMENT=3600 ; fi
 TOTAL=$((BK_TIME_CONFINEMENT - MARGIN))
 if [ "$TOTAL" -le 0 ] ; then TOTAL=1 ; fi
+# the memory confinement is shared by the configurations running side by side:
+# each gets its share, so the portfolio cannot exceed the limit as a whole
+NCONF=4
 if [ -n "$BK_MEMORY_CONFINEMENT" ] ; then
-	ulimit -v $(( (BK_MEMORY_CONFINEMENT - 256) * 1024 ))
+	ulimit -v $(( (BK_MEMORY_CONFINEMENT - 256) * 1024 / NCONF ))
 fi
 if [ ! -x "$BIN/hsc-pn" ] ; then
 	echo "libHSC binaries not found in $BIN (run install.sh)"
