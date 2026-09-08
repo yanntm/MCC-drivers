@@ -48,6 +48,17 @@ case "$BK_EXAMINATION" in
 		exit 0
 		;;
 esac
+# A coloured input reaches us unfolded: the harness runs ITS-Tools on it because
+# we declare P/T only, and that unfolder fuses symmetric bindings without
+# reporting their multiplicity. The unfolded net has the same states but fewer
+# arcs than the coloured semantics, so TRANSITIONS would be an undercount: we
+# do not answer it there (the other three values are unaffected).
+COLOURED=""
+if [ "$(head -1 iscolored 2>/dev/null)" = "TRUE" ] ; then
+	COLOURED=1
+	if [ "$BK_EXAMINATION" = "StateSpace" ] ; then EXPECTED=3 ; fi
+fi
+
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/hsc-mcc.XXXXXX")
 trap 'kill $(jobs -p) 2> /dev/null; rm -rf "$WORK"' EXIT
 for c in "${CONFS[@]}" ; do
@@ -66,6 +77,7 @@ declare -A SEEN
 for c in "${CONFS[@]}" ; do
 	while read -r line ; do
 		key=$(echo "$line" | cut -d' ' -f2)
+		if [ -n "$COLOURED" ] && [ "$key" = "TRANSITIONS" ] ; then continue ; fi
 		if [ -z "${SEEN[$key]}" ] ; then SEEN[$key]=$c ; echo "$line (config $c)" >&2 ; MERGED+=("$line") ; fi
 	done < <(grep "$PREFIX" "$WORK/$c.out" 2> /dev/null)
 done

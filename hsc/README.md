@@ -20,3 +20,10 @@ configuration answered within the confinement is `CANNOT_COMPUTE`.
 `HSC-Linux` of `yanntm/libHSC`), or copies them from a local build with
 `HSC_BUILD=<build tree>`. Known limits and the measurements behind the
 design: `libHSC_in_MCC.md` in the PetriSpot repository.
+
+On a coloured instance the harness unfolds the net with ITS-Tools (we declare
+P/T only) and that unfolder fuses symmetric bindings without reporting their
+multiplicity: the net we receive has the right states but fewer arcs than the
+coloured semantics. StateSpace therefore answers three values there and leaves
+TRANSITIONS unanswered rather than reporting an undercount (measured on
+BART-COL-002/005/010: a constant 167/202 of the oracle).
