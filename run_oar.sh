@@ -6,7 +6,11 @@
 #
 # Results sort themselves: OAR writes OAR.<jobid>.stdout into the directory the
 # job was submitted from, so we submit from a folder named after the
-# examination suffix (RC, RF, RD, LTLF, OS, ...).
+# examination suffix (RC, RF, RD, LTLF, OS, ...). TAG=<name> qualifies that
+# folder (`TAG=hsc` writes into RC.hsc, SS.hsc, ...): two tools, or two
+# settings of one tool, can then run the same examination side by side and
+# stay separate all the way to the tables (the collectors read the
+# examination from the log, not from the folder name).
 #
 # The default runner is ./runatest.sh, which unpacks each model once into
 # INPUTS/<model>/ and leaves it there for later jobs to reuse. A run does not
@@ -26,10 +30,11 @@ CORES=${CORES:-4}
 HOSTS=${HOSTS:-tall%}
 RUNATEST=${RUNATEST:-./runatest.sh}
 export BK_TOOL=${BK_TOOL:-itstools}
+TAG=${TAG:-}
 
 njobs=0
 for i in $SELECT ; do
-	DIR=$(echo $i | perl -pe 's/.*\-(\w+)\.out/\1/g')
+	DIR=$(echo $i | perl -pe 's/.*\-(\w+)\.out/\1/g')${TAG:+.$TAG}
 	mkdir -p $DIR
 	cd $DIR
 	oarsub -l "/nodes=1/core=$CORES,walltime=$WALLTIME" -p "(host like '$HOSTS')" \
@@ -38,4 +43,4 @@ for i in $SELECT ; do
 	cd ..
 	njobs=$((njobs + 1))
 done
-echo "submitted $njobs jobs, tool $BK_TOOL, runner $RUNATEST, timeout ${TIMEOUT}s, walltime $WALLTIME, $CORES cores, hosts $HOSTS"
+echo "submitted $njobs jobs, tool $BK_TOOL, runner $RUNATEST, timeout ${TIMEOUT}s, walltime $WALLTIME, $CORES cores, hosts $HOSTS${TAG:+, results in <EXAM>.$TAG}"
