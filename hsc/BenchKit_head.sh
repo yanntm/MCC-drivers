@@ -38,7 +38,13 @@ fi
 case "$BK_EXAMINATION" in
 	ReachabilityCardinality|ReachabilityFireability|UpperBounds)
 		if [ ! -f "$BK_EXAMINATION.xml" ] ; then echo "Property file $BK_EXAMINATION.xml not found." ; echo "CANNOT_COMPUTE" ; exit 1 ; fi
-		QUERY="--props $BK_EXAMINATION.xml" ; EXPECTED=$(grep -c "<property>" "$BK_EXAMINATION.xml") ; PREFIX='^FORMULA ' ;;
+		QUERY="--props $BK_EXAMINATION.xml" ; EXPECTED=$(grep -c "<property>" "$BK_EXAMINATION.xml") ; PREFIX='^FORMULA '
+		# HSC_APPROX=1: the over-approximation first (the invariant set, the
+		# properties it refutes, a backward search inside it), then the fixpoint
+		# under the remaining budget (libHSC tools/README.md, --approx)
+		if [ "${HSC_APPROX:-0}" = "1" ] && [ "$BK_EXAMINATION" != "UpperBounds" ] ; then
+			QUERY="$QUERY --approx 5 --approx-units --approx-back 50 --approx-back-time 2 --totalTime $TOTAL"
+		fi ;;
 	CTLCardinality|CTLFireability)
 		# the CTL checker (libHSC include/hsc/ctl/): the tool runs the formulas in
 		# rounds of growing per-property budget under --totalTime, so the whole

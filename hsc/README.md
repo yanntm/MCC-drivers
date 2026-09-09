@@ -14,7 +14,10 @@ quarter of the memory confinement (`ulimit -v`), so the portfolio as a whole
 stays under the limit. `HSC_CONFS="louvain-force"` (space separated names
 among `nupn force louvain louvain-force`) runs a subset, a single one with
 the whole memory: the rerun of the best configuration after a portfolio
-sweep. What no
+sweep. `HSC_APPROX=1` makes the reachability examinations run the over-approximation
+first (`hsc-pn --approx`: the invariant set, the properties it refutes, a
+backward search inside it) and the fixpoint after, under `--totalTime`; the
+`hscapprox/` folder is that setting as a tool of its own. What no
 configuration answered within the confinement is `CANNOT_COMPUTE`.
 
 `install.sh` downloads the static binaries published by the libHSC CI (branch
