@@ -1,2 +1,2 @@
-ReachabilityCardinality
-ReachabilityFireability
+ReachabilityCardinality PT
+ReachabilityFireability PT
