@@ -1,7 +1,8 @@
 # `hsc/` — libHSC in the MCC harness
 
 `BenchKit_head.sh` answers StateSpace, OneSafe, ReachabilityDeadlock,
-ReachabilityCardinality, ReachabilityFireability and UpperBounds on P/T nets
+ReachabilityCardinality, ReachabilityFireability, UpperBounds,
+CTLCardinality and CTLFireability on P/T nets
 with `hsc-pn` (libHSC, <https://github.com/yanntm/libHSC>, `tools/README.md`
 there): four configurations run in parallel on the examination (the NUPN
 unit tree as the shape; FORCE reordering; Louvain decomposition; Louvain then

@@ -4,3 +4,5 @@ ReachabilityDeadlock PT
 ReachabilityCardinality PT
 ReachabilityFireability PT
 UpperBounds PT
+CTLCardinality PT
+CTLFireability PT

@@ -39,6 +39,13 @@ case "$BK_EXAMINATION" in
 	ReachabilityCardinality|ReachabilityFireability|UpperBounds)
 		if [ ! -f "$BK_EXAMINATION.xml" ] ; then echo "Property file $BK_EXAMINATION.xml not found." ; echo "CANNOT_COMPUTE" ; exit 1 ; fi
 		QUERY="--props $BK_EXAMINATION.xml" ; EXPECTED=$(grep -c "<property>" "$BK_EXAMINATION.xml") ; PREFIX='^FORMULA ' ;;
+	CTLCardinality|CTLFireability)
+		# the CTL checker (libHSC include/hsc/ctl/): the tool runs the formulas in
+		# rounds of growing per-property budget under --totalTime, so the whole
+		# confinement is handed to it and the merge keeps what each configuration
+		# answered
+		if [ ! -f "$BK_EXAMINATION.xml" ] ; then echo "Property file $BK_EXAMINATION.xml not found." ; echo "CANNOT_COMPUTE" ; exit 1 ; fi
+		QUERY="--props $BK_EXAMINATION.xml --totalTime $TOTAL" ; EXPECTED=$(grep -c "<property>" "$BK_EXAMINATION.xml") ; PREFIX='^FORMULA ' ;;
 	ReachabilityDeadlock) QUERY="--deadlock ReachabilityDeadlock" ; EXPECTED=1 ; PREFIX='^FORMULA ' ;;
 	StateSpace) QUERY="--states" ; EXPECTED=4 ; PREFIX='^STATE_SPACE ' ;;
 	OneSafe) QUERY="--max-tokens" ; EXPECTED=1 ; PREFIX='^STATE_SPACE ' ;;
