@@ -31,3 +31,13 @@ multiplicity: the net we receive has the right states but fewer arcs than the
 coloured semantics. StateSpace therefore answers three values there and leaves
 TRANSITIONS unanswered rather than reporting an undercount (measured on
 BART-COL-002/005/010: a constant 167/202 of the oracle).
+
+`HSC_REDUCE=1` passes `--reduce` to every configuration. Optional
+`HSC_REDUCE_TIME=<seconds>` and `HSC_DEAD_TEST=linear|lp|both|none`
+override the reduction budget and dead-transition test. With no overrides,
+`hsc-pn` defaults apply (10 seconds, `linear`). The log records the flags.
+Reduction remains disabled unless explicitly requested.
+
+StateSpace passes the internal deadline to hsc-pn as well as bounding the
+process externally. A two-second termination grace keeps a stuck child from
+outliving the harness confinement.

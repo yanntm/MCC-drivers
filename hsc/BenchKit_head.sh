@@ -10,6 +10,14 @@ echo "libHSC driver: BK_EXAMINATION=$BK_EXAMINATION BK_INPUT=$BK_INPUT BK_TIME_C
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 BIN=$DIR/bin
 MARGIN=${HSC_MARGIN:-5}
+# Reduction is explicitly opt-in; keep the default portfolio unchanged.
+REDUCE_ARGS=()
+if [ "${HSC_REDUCE:-0}" = "1" ] ; then
+	REDUCE_ARGS=(--reduce)
+	if [ -n "${HSC_REDUCE_TIME:-}" ] ; then REDUCE_ARGS+=(--reduce-time "$HSC_REDUCE_TIME") ; fi
+	if [ -n "${HSC_DEAD_TEST:-}" ] ; then REDUCE_ARGS+=(--dead-test "$HSC_DEAD_TEST") ; fi
+fi
+printf 'libHSC reduction flags:' ; printf ' %q' "${REDUCE_ARGS[@]}" ; echo
 if [ -z "$BK_TIME_CONFINEMENT" ] ; then BK_TIME_CONFINEMENT=3600 ; fi
 TOTAL=$((BK_TIME_CONFINEMENT - MARGIN))
 if [ "$TOTAL" -le 0 ] ; then TOTAL=1 ; fi
@@ -53,7 +61,7 @@ case "$BK_EXAMINATION" in
 		if [ ! -f "$BK_EXAMINATION.xml" ] ; then echo "Property file $BK_EXAMINATION.xml not found." ; echo "CANNOT_COMPUTE" ; exit 1 ; fi
 		QUERY="--props $BK_EXAMINATION.xml --totalTime $TOTAL" ; EXPECTED=$(grep -c "<property>" "$BK_EXAMINATION.xml") ; PREFIX='^FORMULA ' ;;
 	ReachabilityDeadlock) QUERY="--deadlock ReachabilityDeadlock" ; EXPECTED=1 ; PREFIX='^FORMULA ' ;;
-	StateSpace) QUERY="--states" ; EXPECTED=4 ; PREFIX='^STATE_SPACE ' ;;
+	StateSpace) QUERY="--states --totalTime $TOTAL" ; EXPECTED=4 ; PREFIX='^STATE_SPACE ' ;;
 	OneSafe) QUERY="--max-tokens" ; EXPECTED=1 ; PREFIX='^STATE_SPACE ' ;;
 	*)
 		echo "Examination $BK_EXAMINATION is not supported by libHSC."
@@ -75,7 +83,7 @@ fi
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/hsc-mcc.XXXXXX")
 trap 'kill $(jobs -p) 2> /dev/null; rm -rf "$WORK"' EXIT
 for c in "${CONFS[@]}" ; do
-	( timeout "$TOTAL" "$BIN/hsc-pn" -i model.pnml ${CONF[$c]} $QUERY -q > "$WORK/$c.out" 2> "$WORK/$c.err" ; echo $? > "$WORK/$c.status" ) &
+	( timeout -k 2 "$((TOTAL + 2))" "$BIN/hsc-pn" -i model.pnml ${CONF[$c]} $QUERY "${REDUCE_ARGS[@]}" -q > "$WORK/$c.out" 2> "$WORK/$c.err" ; echo $? > "$WORK/$c.status" ) &
 done
 # stop as soon as one configuration has every answer; otherwise wait for all
 complete() { [ "$(grep -c "$PREFIX" "$WORK/$1.out" 2> /dev/null)" -ge "$EXPECTED" ] ; }
