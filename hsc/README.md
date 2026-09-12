@@ -42,3 +42,9 @@ Reduction remains disabled unless explicitly requested.
 StateSpace passes the internal deadline to hsc-pn as well as bounding the
 process externally. A two-second termination grace keeps a stuck child from
 outliving the harness confinement.
+
+Every portfolio configuration runs with verbose diagnostics (`-v`, no `-q`).
+The combined campaign log includes its complete stderr under the configuration
+header, including reduction edits, counting-record losses and solver statistics.
+Answer attribution names the first configuration in merge order supplying that
+metric; it does not identify the fastest configuration.

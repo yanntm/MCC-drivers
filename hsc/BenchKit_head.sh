@@ -83,7 +83,7 @@ fi
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/hsc-mcc.XXXXXX")
 trap 'kill $(jobs -p) 2> /dev/null; rm -rf "$WORK"' EXIT
 for c in "${CONFS[@]}" ; do
-	( timeout -k 2 "$((TOTAL + 2))" "$BIN/hsc-pn" -i model.pnml ${CONF[$c]} $QUERY "${REDUCE_ARGS[@]}" -q > "$WORK/$c.out" 2> "$WORK/$c.err" ; echo $? > "$WORK/$c.status" ) &
+	( timeout -k 2 "$((TOTAL + 2))" "$BIN/hsc-pn" -i model.pnml ${CONF[$c]} $QUERY "${REDUCE_ARGS[@]}" -v > "$WORK/$c.out" 2> "$WORK/$c.err" ; echo $? > "$WORK/$c.status" ) &
 done
 # stop as soon as one configuration has every answer; otherwise wait for all
 complete() { [ "$(grep -c "$PREFIX" "$WORK/$1.out" 2> /dev/null)" -ge "$EXPECTED" ] ; }
@@ -105,7 +105,7 @@ for c in "${CONFS[@]}" ; do
 		if [ -z "${SEEN[$key]}" ] ; then SEEN[$key]=$c ; echo "answered $key by configuration $c" ; MERGED+=("$line") ; fi
 	done < <(grep "$PREFIX" "$WORK/$c.out" 2> /dev/null)
 done
-for c in "${CONFS[@]}" ; do echo "== $c: exit $(cat "$WORK/$c.status" 2> /dev/null), $(grep -c "$PREFIX" "$WORK/$c.out" 2> /dev/null) answers" ; tail -2 "$WORK/$c.err" ; done
+for c in "${CONFS[@]}" ; do echo "== $c: exit $(cat "$WORK/$c.status" 2> /dev/null), $(grep -c "$PREFIX" "$WORK/$c.out" 2> /dev/null) answers" ; cat "$WORK/$c.err" ; done
 case "$BK_EXAMINATION" in
 	OneSafe)
 		MX=$(printf '%s\n' "${MERGED[@]}" | grep -o 'MAX_TOKEN_IN_PLACE [0-9]*' | head -1 | awk '{print $2}')
