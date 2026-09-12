@@ -5,7 +5,7 @@
 # hsc-pn is single threaded and no configuration dominates (libHSC_in_MCC.md in
 # PetriSpot): the NUPN tree as is, FORCE reordering, Louvain, Louvain + FORCE.
 # Runs in the model folder (model.pnml, <Examination>.xml). Prints
-# CANNOT_COMPUTE for what no configuration answered within the confinement.
+# CANNOT_COMPUTE only when no configuration answered the examination.
 echo "libHSC driver: BK_EXAMINATION=$BK_EXAMINATION BK_INPUT=$BK_INPUT BK_TIME_CONFINEMENT=$BK_TIME_CONFINEMENT"
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 BIN=$DIR/bin
@@ -115,7 +115,8 @@ case "$BK_EXAMINATION" in
 		;;
 	*)
 		printf '%s\n' "${MERGED[@]}" | grep "$PREFIX"
-		if [ "${#MERGED[@]}" -lt "$EXPECTED" ] ; then echo "answered ${#MERGED[@]} of $EXPECTED" ; echo "CANNOT_COMPUTE" ; fi
+		if [ "${#MERGED[@]}" -lt "$EXPECTED" ] ; then echo "answered ${#MERGED[@]} of $EXPECTED" ; fi
+		if [ "${#MERGED[@]}" -eq 0 ] ; then echo "CANNOT_COMPUTE" ; fi
 		;;
 esac
 exit 0

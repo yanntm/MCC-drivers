@@ -17,8 +17,9 @@ the whole memory: the rerun of the best configuration after a portfolio
 sweep. `HSC_APPROX=1` makes the reachability examinations run the over-approximation
 first (`hsc-pn --approx`: the invariant set, the properties it refutes, a
 backward search inside it) and the fixpoint after, under `--totalTime`; the
-`hscapprox/` folder is that setting as a tool of its own. What no
-configuration answered within the confinement is `CANNOT_COMPUTE`.
+`hscapprox/` folder is that setting as a tool of its own. An examination with no
+answer is `CANNOT_COMPUTE`. Partial results retain their answer lines and use
+an ordinary `answered N of M` diagnostic, never an examination-wide failure token.
 
 `install.sh` downloads the static binaries published by the libHSC CI (branch
 `HSC-Linux` of `yanntm/libHSC`), or copies them from a local build with
